@@ -1,0 +1,2656 @@
+<!DOCTYPE html> 
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CALCULADORA DE EVENTOS EM EXECUÇÃO PENAL X</title>
+    <style>
+
+       
+        body {
+            font-family: Verdana, sans-serif;
+            font-size: 12px;
+
+        }
+
+        /* Adiciona estilo para exibir os campos na mesma linha */
+        .exec-observation-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1px;
+
+            
+        }
+
+
+
+
+        .campo-preenchido label {
+
+            width: 500px;
+        }
+
+        
+
+
+
+
+
+        .exec-observation-container input {
+            margin-right: 2px;
+
+        }
+
+        .small-input {
+            width: 50px; /* Ajuste o valor conforme necessário */
+        }
+
+        .interruption-bar {
+            position: absolute;
+            background-color: rgb(255, 80, 80);
+            z-index: 1;
+            top: 500px;
+            height: 30px; // altura que inicia o comentário da interrupção 
+
+            
+
+        }
+
+        .interruption-date {
+            position: absolute;
+            font-size: 12px;
+            color: #df5d5d;            
+            transform: translateY(-25px); 
+            white-space: nowrap;
+        }
+        
+        .exec-number {
+            position: absolute;
+            top: -15px;
+            left: 2px;
+            font-size: 13px;
+            color: #0e0250;
+            font-weight: bold;
+        }
+        
+        .segment-label {
+            font-size: 12px;
+        }
+
+        .detraction-bar {
+            position: absolute;
+            top: -15px;
+            color: #2c2c2c;
+
+        }
+        
+        .event-label {
+            position: absolute;
+            font-size: 10px;
+            color: black;
+            transform: rotate(-45deg);
+            transform-origin: left top;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        .event-arrow {
+            position: absolute;
+            width: 0; 
+            height: 0; 
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 10px solid black;
+        }
+
+        .elapsed-time {
+            font-size: 10px;
+            font-weight: bold;
+            color: rgb(243, 81, 81);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slide {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 100% 100%;
+            }
+        }
+
+        #floatingBox {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 90%;
+            height: 100px; /* Adjusted height */
+            background-color: rgba(206, 206, 206, 0.9);
+            border: 1px solid rgba(102, 101, 101, 0.9);
+            padding: 10px;
+            z-index: 999;
+            overflow-y: auto; /* Add scrollbar */
+        }
+
+
+
+
+
+        input:not(:empty), textarea:not(:empty), select:not(:empty) {
+   	background-color: ; /* cor quando for preenchido o campo de anotações */
+
+}
+
+
+.campo-preenchido {
+    background-color: #c7c7c7; 
+}
+
+.event-input {
+
+    width: 300px; /* Updated width */
+}
+
+#floatingInfoBox {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 300px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid black;
+    padding: 10px;
+    z-index: 1000;
+}
+
+
+.exec-observation-container input[type="text"] {
+
+        width: 300px; /* Ajuste o valor conforme necessário */
+    }
+       
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+<div id="floatingBox2" style="position: fixed; top: 250px; right: 10px; width: 322px; height: 0%; background-color: rgba(238, 238, 238, 0.8); border: 0px solid black; padding: 0px; z-index: 800;">
+
+        <!-- <button type="button" onclick="toggleFloatingBox()" style="float: right; height: 480px; width: 100%; opacity: 0.5;"> Mostrar/Ocultar Caixa </button> -->
+        <button type="button" onclick="toggleFloatingBox()" style="float: right; height: 200px; top: 900px; width: 300px; width: 100%; opacity: 0.5;">Mostrar/Ocultar Caixa</button>
+
+
+
+<script>
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "F2" || event.key === "F2") {
+            toggleFloatingBox();
+        }
+    });
+</script>
+</div>
+<div id="floatingBox" style="position: fixed; top: 10px; left: 10px; width: 1500px; height: 450px; background-color: rgba(238, 238, 238, 0.8); border: 1px solid black; padding: 10px; z-index: 999;">
+</table>
+<table style="width: 100%; border: 10x solid rgb(190, 181, 181); vertical-align: top;">
+    
+    <tr>
+        
+
+<td>
+     <form id="meuFormulario">
+
+        <label for="numeroExistente">LISTA:</label>
+
+        <select id="numeroExistente" name="numeroExistente" onchange="carregarDadosExistente()" style="width: 80px;"></select></select>
+
+        <label for="numero">PEC:</label>
+
+        <input type="text" id="numero" name="numero" onchange="carregarDados()" style="width: 60px;" readonly>
+
+
+<!-- Botão Salvar Dados 
+
+        <!-- <button type="button" onclick="salvarDados()">Salvar Dados</button> -->
+
+
+
+        <button type="button" onclick="criarNovoPEC()">Criar Novo PEC</button>
+        <button type="button" onclick="deletarPEC()">Deletar PEC</button>
+        <button type="button" onclick="gerarLista()">Gerar Lista</button>
+
+    </td>
+    
+</tr>
+<tr style="text-align: right;">
+  <td style="text-align: right;"> 
+        <button type="button" onclick="exportarDados()">Exportar Dados</button>
+        <input type="file" id="importarArquivo" accept="application/json">
+        <button type="button" onclick="importarDados()">Importar Dados</button>
+        <button type="button" onclick="limparDados()">Limpar Dados</button>
+    </td>
+
+        </tr>        
+        </table>
+        
+
+        <a href="../VANT/FILES/" id="pecLink" target="_blank"></a>
+        <button type="button" onclick="copiarLink()">COPY LINK PRINTS</button> <br>
+
+
+<br>
+        <a href="../VANT/FILES/" id="pecLink2" target="_blank">RAIZ</a> ●
+
+        
+        <script>
+            function copiarLink() {
+                let numeroField = document.getElementById("numero");
+                let link = `C:\\Users\\romramos\\Desktop\\VANT\\FILES\\${numeroField.value}\\prints.html`;
+                navigator.clipboard.writeText(link).then(function() {
+                    
+                }, function(err) {
+                    alert('Erro ao copiar o link: ', err);
+                });
+            }
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let pecLink = document.getElementById("pecLink");
+    let numeroField = document.getElementById("numero");
+    let numeroExistente = document.getElementById("numeroExistente");
+
+    function updatePecLink() {
+        pecLink.href = `../VANT/FILES/${numeroField.value}/`;
+    }
+
+    function createButton(text, url) {
+        let button = document.createElement("button");
+        button.textContent = text;
+        button.onclick = function() {
+            window.open(url, "_blank");
+        };
+        return button;
+    }
+
+    function updateButtons() {
+        let parent = pecLink.parentNode;
+        
+        // Remove botões antigos antes de adicionar novos
+        let existingButtons = document.querySelectorAll(".dynamic-button");
+        existingButtons.forEach(btn => btn.remove());
+
+        let button1 = createButton("PASTA DESTE", `../VANT/FILES/${numeroField.value}/`);
+        let button2 = createButton("PRINTS", `../VANT/FILES/${numeroField.value}/prints.html`);
+
+        button1.classList.add("dynamic-button");
+        button2.classList.add("dynamic-button");
+
+        parent.insertBefore(button1, pecLink.nextSibling);
+        parent.insertBefore(button2, button1.nextSibling);
+    }
+
+    numeroField.addEventListener("input", updatePecLink);
+    numeroField.addEventListener("change", updatePecLink);
+    numeroField.addEventListener("input", updateButtons);
+    numeroField.addEventListener("change", updateButtons);
+
+    numeroExistente.addEventListener("change", function() {
+        numeroField.value = numeroExistente.value;
+        updatePecLink();
+        updateButtons();
+        
+    });
+
+    updatePecLink();
+    updateButtons();
+
+});
+
+</script>
+
+
+
+
+
+
+       
+
+
+
+
+
+
+
+
+
+<a href="../VANT/capturar.html" target=”_blank”>NEW PRINTS</a> ●
+
+<a href="file:///C:/Users/romramos/Desktop/VANT/PRESCRICAO_MULTA.html" target=”_blank”>PRESCRIÇÃO MULTA PENAL</a> ●
+
+<a href="https://tjsp-my.sharepoint.com/:w:/r/personal/romramos_tjsp_jus_br/_layouts/15/doc2.aspx?sourcedoc=%7B6397392F-C389-4A1D-91D0-30A530F1938A%7D&file=Documento%204.docx&action=editnew&mobileredirect=true&wdPreviousSession=6677bcd3-ab75-3894-487d-0fdb022d0087&wdNewAndOpenCt=1728932373496&wdo=4&wdOrigin=wacFileNew&wdPreviousCorrelation=4cad98cb-da62-4275-a597-b75b13a3bcd2&wdnd=1&wdTpl=blankNew" target=”_blank”>MODELO CERT. MULTA</a> ●
+
+
+
+
+
+        
+        <a href="https://www.planalto.gov.br/ccivil_03/decreto-lei/del2848compilado.htm" target=”_blank”>CP</a> ●
+        <a href="https://esaj.tjsp.jus.br/cpopg/open.do" target=”_blank”>CONSULTA E-SAJ</a> ●
+        <a href="https://prod.ironmountain.com.br/TJSP/Login.aspx" target=”_blank”>IRON</a> ●
+        <a href="https://bnmp2.cnj.jus.br/#/" target=”_blank”>BNMP (CNJ)</a> ●
+        <a href="https://apps.powerapps.com/play/e/98c9177a-56c9-4700-b399-91d21c88f93b/a/880c8aa3-24b7-4306-bea8-54709d6c4528?tenantId=3590422d-8e59-4036-9245-d6edd8cc0f7a&hint=fa9b7bb3-9301-47a4-b34b-f30477ee36b6&source=sharebutton&sourcetime=1702317913033" target=”_blank”>BAIXAR F.A</a>
+        
+
+
+
+        C:\Users\romramos\Desktop\VANT\GERAL.txt
+
+        <HR>
+
+<textarea id="desfecho" name="desfecho" style="width: 99.5%; height: 34px; text-align: left; vertical-align: top; resize: none;">NOTA:</textarea>
+
+<BR> <BR> 
+
+<label for="nome">Nome: </label><input type="text" id="nome" name="nome" style="width: 400px;">
+
+ <label for="icp">ICP:</label>
+<input type="date" id="icp" name="icp" onchange="atualizarGraficoGantt()"> 
+
+
+
+        
+
+
+
+
+
+<HR>
+
+                        
+    <table>
+
+        <tr>
+
+            <td>    
+
+        <label for="anotacoes"></label>
+        <textarea id="anotacoes" name="anotacoes" rows="25" cols="150" style="padding: 10px; bgcolor: lightblue;">
+	</textarea>
+            </td>
+
+            <td bgcolor="">  
+
+        <!-- Campos de checkbox -->
+        <div id="checkboxFields">
+            <label><input type="checkbox" name="checkbox1" id="checkbox1"> Cadastrar defensoria</label><br>
+            <label><input type="checkbox" name="checkbox2" id="checkbox2"> Prencher cadastro do processo</label><br>
+            <label><input type="checkbox" name="checkbox3" id="checkbox3"> Observação de pendências e prazos</label><br>
+            <label><input type="checkbox" name="checkbox4" id="checkbox4"> Mov. Cod. 61749</label><br>
+            <label><input type="checkbox" name="checkbox5" id="checkbox5"> Endereço do local da prisão</label><br>
+            <label><input type="checkbox" name="checkbox6" id="checkbox6"> Local de destino</label><br>
+            <label><input type="checkbox" name="checkbox7" id="checkbox7"> Conferir datas de lapso</label><br>
+            <label><input type="checkbox" name="checkbox8" id="checkbox8"> Retirar pendências e prazos</label><br>
+            <label><input type="checkbox" name="checkbox9" id="checkbox9"> Filas</label><br>
+            <label><input type="checkbox" name="checkbox10" id="checkbox10"> Mandados</label><br>
+            <label><input type="checkbox" name="checkbox11" id="checkbox11"> Regularização BNMP</label><br>
+            <label><input type="checkbox" name="checkbox12" id="checkbox12"> Tarjas</label><br>
+            <label><input type="checkbox" name="checkbox13" id="checkbox13"> Apensar não somados</label><br>
+            <label><input type="checkbox" name="checkbox14" id="checkbox14"> Ato 8302 (digitalização)</label><br>
+            <label><input type="checkbox" name="checkbox15" id="checkbox15"> Certidão renúncia MP e Defensoria</label><br>
+            <label><input type="checkbox" name="checkbox16" id="checkbox16"> Trasladar peças</label><br>
+            <label><input type="checkbox" name="checkbox17" id="checkbox17"> Ficha do Réu</label><br>
+            <label><input type="checkbox" name="checkbox18" id="checkbox18"> Certidão de saneamento: 425990</label><br>
+            <label><input type="checkbox" name="checkbox19" id="checkbox19"> Escaninho e fragmentação</label><br>
+            <label><input type="checkbox" name="checkbox20" id="checkbox20"> Redistribuição</label><br>
+        </div>
+
+            </td>
+
+        </tr>
+
+    </table>
+
+   
+
+<HR>
+
+            
+        <!-- Campos numExec1 até numExec20 com observação -->
+        <div id="execFields"></div>
+
+
+        <HR>
+
+
+
+
+<table border="0px" width="100%">
+    <td valign="top">
+<TABLE>
+<TR><TD><FONT COLOR="RED"> <B>INTERRUPÇÕES:</B></FONT><P></P></TD></TR>
+<TR>
+    <TD>
+    INÍCIO:
+    </TD>
+    <TD>
+    FIM:
+    </TD>    
+    <TD>
+    ROTULO:
+    </TD>
+    </TR>
+<TR>
+<TD>
+    <label for="data_comeco_interrupcao_1"></label>
+    <input type="date" id="data_comeco_interrupcao_1" name="data_comeco_interrupcao_1" onchange="atualizarGraficoGantt()">
+</TD>
+<TD>
+    <label for="data_termino_interrupcao_1"></label>
+    <input type="date" id="data_termino_interrupcao_1" name="data_termino_interrupcao_1" onchange="atualizarGraficoGantt()">
+</TD>
+<TD>
+    <label for="rotulo_interrupcao_1"></label>
+    <input type="text" id="rotulo_interrupcao_1" name="rotulo_interrupcao_1" onchange="atualizarGraficoGantt()">
+</TD>
+</TR>
+<TR>
+    <TD>
+        <label for="data_comeco_interrupcao_2"></label>
+        <input type="date" id="data_comeco_interrupcao_2" name="data_comeco_interrupcao_2" onchange="atualizarGraficoGantt()">
+    </TD>
+    <TD>
+        <label for="data_termino_interrupcao_2"></label>
+        <input type="date" id="data_termino_interrupcao_2" name="data_termino_interrupcao_2" onchange="atualizarGraficoGantt()">
+    </TD>
+    <TD>
+        <label for="rotulo_interrupcao_2"></label>
+        <input type="text" id="rotulo_interrupcao_2" name="rotulo_interrupcao_2" onchange="atualizarGraficoGantt()">
+    </TD>
+    </TR>
+    <TD>
+        <label for="data_comeco_interrupcao_3"></label>
+        <input type="date" id="data_comeco_interrupcao_3" name="data_comeco_interrupcao_3" onchange="atualizarGraficoGantt()">
+    </TD>
+    <TD>
+        <label for="data_termino_interrupcao_3"></label>
+        <input type="date" id="data_termino_interrupcao_3" name="data_termino_interrupcao_3" onchange="atualizarGraficoGantt()">
+    </TD>
+    <TD>
+        <label for="rotulo_interrupcao_3"></label>
+        <input type="text" id="rotulo_interrupcao_3" name="rotulo_interrupcao_3" onchange="atualizarGraficoGantt()">
+    </TD>
+    </TR>
+    <TR>
+        <TD><label for="data_comeco_interrupcao_4"></label><input type="date" id="data_comeco_interrupcao_4" name="data_comeco_interrupcao_4" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="data_termino_interrupcao_4"></label><input type="date" id="data_termino_interrupcao_4" name="data_termino_interrupcao_4" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="rotulo_interrupcao_4"></label><input type="text" id="rotulo_interrupcao_4" name="rotulo_interrupcao_4" onchange="atualizarGraficoGantt()"></TD>
+    </TR>
+    <TR>
+        <TD><label for="data_comeco_interrupcao_5"></label><input type="date" id="data_comeco_interrupcao_5" name="data_comeco_interrupcao_5" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="data_termino_interrupcao_5"></label><input type="date" id="data_termino_interrupcao_5" name="data_termino_interrupcao_5" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="rotulo_interrupcao_5"></label><input type="text" id="rotulo_interrupcao_5" name="rotulo_interrupcao_5" onchange="atualizarGraficoGantt()"></TD>
+    </TR>
+    <TR>
+        <TD><label for="data_comeco_interrupcao_6"></label><input type="date" id="data_comeco_interrupcao_6" name="data_comeco_interrupcao_6" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="data_termino_interrupcao_6"></label><input type="date" id="data_termino_interrupcao_6" name="data_termino_interrupcao_6" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="rotulo_interrupcao_6"></label><input type="text" id="rotulo_interrupcao_6" name="rotulo_interrupcao_6" onchange="atualizarGraficoGantt()"></TD>
+    </TR>
+    <TR>
+        <TD><label for="data_comeco_interrupcao_7"></label><input type="date" id="data_comeco_interrupcao_7" name="data_comeco_interrupcao_7" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="data_termino_interrupcao_7"></label><input type="date" id="data_termino_interrupcao_7" name="data_termino_interrupcao_7" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="rotulo_interrupcao_7"></label><input type="text" id="rotulo_interrupcao_7" name="rotulo_interrupcao_7" onchange="atualizarGraficoGantt()"></TD>
+    </TR>
+    <TR>
+        <TD><label for="data_comeco_interrupcao_8"></label><input type="date" id="data_comeco_interrupcao_8" name="data_comeco_interrupcao_8" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="data_termino_interrupcao_8"></label><input type="date" id="data_termino_interrupcao_8" name="data_termino_interrupcao_8" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="rotulo_interrupcao_8"></label><input type="text" id="rotulo_interrupcao_8" name="rotulo_interrupcao_8" onchange="atualizarGraficoGantt()"></TD>
+    </TR>
+    <TR>
+        <TD><label for="data_comeco_interrupcao_9"></label><input type="date" id="data_comeco_interrupcao_9" name="data_comeco_interrupcao_9" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="data_termino_interrupcao_9"></label><input type="date" id="data_termino_interrupcao_9" name="data_termino_interrupcao_9" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="rotulo_interrupcao_9"></label><input type="text" id="rotulo_interrupcao_9" name="rotulo_interrupcao_9" onchange="atualizarGraficoGantt()"></TD>
+    </TR>
+    <TR>
+        <TD><label for="data_comeco_interrupcao_10"></label><input type="date" id="data_comeco_interrupcao_10" name="data_comeco_interrupcao_10" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="data_termino_interrupcao_10"></label><input type="date" id="data_termino_interrupcao_10" name="data_termino_interrupcao_10" onchange="atualizarGraficoGantt()"></TD>
+        <TD><label for="rotulo_interrupcao_10"></label><input type="text" id="rotulo_interrupcao_10" name="rotulo_interrupcao_10" onchange="atualizarGraficoGantt()"></TD>
+    </TR>
+</TABLE>
+</td>
+<td valign="top">
+<table border=0>
+    <tr>
+        <td><FONT COLOR="RED"> <B> DETRAÇÕES:</B></FONT> <p></td>
+            </tr>
+    <tr>
+<td>INÍCIO: <p></td>
+<td>FIM: <p></p></td>
+<td>EX. DETRAÍDA:<p></p></td>
+<td>NOTA_DETRACAO:<p></p></td>
+    </tr>
+    <tr>
+        <td >
+            <label for="detractionStartDate"></label>
+            <input type="date" id="detractionStartDate" name="detractionStartDate" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate"></label>
+            <input type="date" id="detractionEndDate" name="detractionEndDate" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays"></label>
+            <input type="number" id="detractionExecDays" name="detractionExecDays" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao"></label>
+            <input type="text" id="notaDetracao" name="notaDetracao" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <!-- Novas detrações -->
+    <tr>
+        <td>
+            <label for="detractionStartDate2"></label>
+            <input type="date" id="detractionStartDate2" name="detractionStartDate2" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate2"></label>
+            <input type="date" id="detractionEndDate2" name="detractionEndDate2" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays2"></label>
+            <input type="number" id="detractionExecDays2" name="detractionExecDays2" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao2"></label>
+            <input type="text" id="notaDetracao2" name="notaDetracao2" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="detractionStartDate3"></label>
+            <input type="date" id="detractionStartDate3" name="detractionStartDate3" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate3"></label>
+            <input type="date" id="detractionEndDate3" name="detractionEndDate3" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays3"></label>
+            <input type="number" id="detractionExecDays3" name="detractionExecDays3" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao3"></label>
+            <input type="text" id="notaDetracao3" name="notaDetracao3" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="detractionStartDate4"></label>
+            <input type="date" id="detractionStartDate4" name="detractionStartDate4" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate4"></label>
+            <input type="date" id="detractionEndDate4" name="detractionEndDate4" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays4"></label>
+            <input type="number" id="detractionExecDays4" name="detractionExecDays4" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao4"></label>
+            <input type="text" id="notaDetracao4" name="notaDetracao4" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="detractionStartDate5"></label>
+            <input type="date" id="detractionStartDate5" name="detractionStartDate5" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate5"></label>
+            <input type="date" id="detractionEndDate5" name="detractionEndDate5" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays5"></label>
+            <input type="number" id="detractionExecDays5" name="detractionExecDays5" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao5"></label>
+            <input type="text" id="notaDetracao5" name="notaDetracao5" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="detractionStartDate6"></label>
+            <input type="date" id="detractionStartDate6" name="detractionStartDate6" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate6"></label>
+            <input type="date" id="detractionEndDate6" name="detractionEndDate6" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays6"></label>
+            <input type="number" id="detractionExecDays6" name="detractionExecDays6" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao6"></label>
+            <input type="text" id="notaDetracao6" name="notaDetracao6" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="detractionStartDate7"></label>
+            <input type="date" id="detractionStartDate7" name="detractionStartDate7" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate7"></label>
+            <input type="date" id="detractionEndDate7" name="detractionEndDate7" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays7"></label>
+            <input type="number" id="detractionExecDays7" name="detractionExecDays7" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao7"></label>
+            <input type="text" id="notaDetracao7" name="notaDetracao7" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="detractionStartDate8"></label>
+            <input type="date" id="detractionStartDate8" name="detractionStartDate8" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate8"></label>
+            <input type="date" id="detractionEndDate8" name="detractionEndDate8" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays8"></label>
+            <input type="number" id="detractionExecDays8" name="detractionExecDays8" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao8"></label>
+            <input type="text" id="notaDetracao8" name="notaDetracao8" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="detractionStartDate9"></label>
+            <input type="date" id="detractionStartDate9" name="detractionStartDate9" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate9"></label>
+            <input type="date" id="detractionEndDate9" name="detractionEndDate9" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays9"></label>
+            <input type="number" id="detractionExecDays9" name="detractionExecDays9" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao9"></label>
+            <input type="text" id="notaDetracao9" name="notaDetracao9" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="detractionStartDate10"></label>
+            <input type="date" id="detractionStartDate10" name="detractionStartDate10" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="detractionEndDate10"></label>
+            <input type="date" id="detractionEndDate10" name="detractionEndDate10" onchange="atualizarGraficoGantt()">
+        </td>
+        <td ALIGN="CENTER">
+            <label for="detractionExecDays10"></label>
+            <input type="number" id="detractionExecDays10" name="detractionExecDays10" class="small-input" onchange="atualizarGraficoGantt()">
+        </td>
+        <td>
+            <label for="notaDetracao10"></label>
+            <input type="text" id="notaDetracao10" name="notaDetracao10" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+</table>    
+</td>
+<td>
+<table>    
+    <tr>
+        <td >
+            <FONT COLOR="RED"><B>EVENTOS</B></FONT><p>
+    </tr>
+    <tr>
+        <td >
+         DESCRIÇÃO: <p>
+        </td>
+        <td>    
+        DATA:<p>
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_1">1:</label>
+            <input type="text" id="evento_1" name="evento_1">
+        </td>
+        <td>    
+            <label for="data_evento_1"></label>
+            <input type="date" id="data_evento_1" name="data_evento_1" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_2">2:</label>
+            <input type="text" id="evento_2" name="evento_2">
+        </td>
+        <td>    
+            <label for="data_evento_2"></label>
+            <input type="date" id="data_evento_2" name="data_evento_2" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_3">3:</label>
+            <input type="text" id="evento_3" name="evento_3">
+        </td>
+        <td>    
+            <label for="data_evento_3"></label>
+            <input type="date" id="data_evento_3" name="data_evento_3" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_4">4:</label>
+            <input type="text" id="evento_4" name="evento_4">
+        </td>
+        <td>    
+            <label for="data_evento_4"></label>
+            <input type="date" id="data_evento_4" name="data_evento_4" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_5">5:</label>
+            <input type="text" id="evento_5" name="evento_5">
+        </td>
+        <td>    
+            <label for="data_evento_5"></label>
+            <input type="date" id="data_evento_5" name="data_evento_5" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_6">6:</label>
+            <input type="text" id="evento_6" name="evento_6">
+        </td>
+        <td>    
+            <label for="data_evento_6"></label>
+            <input type="date" id="data_evento_6" name="data_evento_6" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_7">7:</label>
+            <input type="text" id="evento_7" name="evento_7">
+        </td>
+        <td>    
+            <label for="data_evento_7"></label>
+            <input type="date" id="data_evento_7" name="data_evento_7" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_8">8:</label>
+            <input type="text" id="evento_8" name="evento_8">
+        </td>
+        <td>    
+            <label for="data_evento_8"></label>
+            <input type="date" id="data_evento_8" name="data_evento_8" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_9">9:</label>
+            <input type="text" id="evento_9" name="evento_9">
+        </td>
+        <td>    
+            <label for="data_evento_9"></label>
+            <input type="date" id="data_evento_9" name="data_evento_9" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_10">10:</label>
+            <input type="text" id="evento_10" name="evento_10">
+        </td>
+        <td>    
+            <label for="data_evento_10"></label>
+            <input type="date" id="data_evento_10" name="data_evento_10" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_11">11:</label>
+            <input type="text" id="evento_11" name="evento_11">
+        </td>
+        <td>    
+            <label for="data_evento_11"></label>
+            <input type="date" id="data_evento_11" name="data_evento_11" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_12">12:</label>
+            <input type="text" id="evento_12" name="evento_12">
+        </td>
+        <td>    
+            <label for="data_evento_12"></label>
+            <input type="date" id="data_evento_12" name="data_evento_12" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_13">13:</label>
+            <input type="text" id="evento_13" name="evento_13">
+        </td>
+        <td>    
+            <label for="data_evento_13"></label>
+            <input type="date" id="data_evento_13" name="data_evento_13" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_14">14:</label>
+            <input type="text" id="evento_14" name="evento_14">
+        </td>
+        <td>    
+            <label for="data_evento_14"></label>
+            <input type="date" id="data_evento_14" name="data_evento_14" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+    <tr>
+        <td >
+            <label for="evento_15">15:</label>
+            <input type="text" id="evento_15" name="evento_15">
+        </td>
+        <td>    
+            <label for="data_evento_15"></label>
+            <input type="date" id="data_evento_15" name="data_evento_15" onchange="atualizarGraficoGantt()">
+        </td>
+    </tr>
+</table>  
+</td>
+</table>
+<hr>
+<br>
+
+    </form></p>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+        <!-- Gráfico de Gantt -->
+<div id="ganttChart" class="gantt-chart"></div>
+
+<div id="floatingInfoBox">
+    <h3>Informações</h3>
+    <p id="tempoTotalPenaCumprida">Pena: 0 anos, 0 meses, 0 dias</p>
+    <p id="tempoTotalDetracoes">Tempo Total de Detrações: 0 dias</p>
+    <p id="tempoTotalInterrupcoes">Tempo Total de Interrupções: 0 dias</p>
+    <p id="quantidadeTotalRemicoes">Quantidade Total de Remições: 0 dias</p>
+    <p id="tcp">TCP: N/A</p>
+    <p id="ini_fracoes">Ini_frações: N/A</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Carregar os números cadastrados
+            carregarNumerosCadastrados();
+
+            let execFields = document.getElementById("execFields");
+            for (let i = 1; i <= 11; i++) {
+
+                
+                // Criando o contêiner para os campos na mesma linha
+                let container = document.createElement("div");
+                container.classList.add("exec-observation-container");
+
+                // Campo numExec
+                let labelExec = document.createElement("label");
+                labelExec.setAttribute("for", "numExec" + i);
+                labelExec.textContent = "Ex. " + i + ":";
+
+                let inputExec = document.createElement("input");
+                inputExec.type = "text";
+                inputExec.id = "numExec" + i;
+                inputExec.name = "numExec" + i;
+
+                // Campo de observação
+                let labelObs = document.createElement("label");
+                labelObs.setAttribute("for", "obsExec" + i);
+                labelObs.textContent = "Observação " + i + ":";
+
+                let inputObs = document.createElement("input");
+                inputObs.type = "text";
+                inputObs.id = "obsExec" + i;
+                inputObs.name = "obsExec" + i;
+
+                // Campos adicionais
+                let labelAnos = document.createElement("label");
+                labelAnos.setAttribute("for", "anosExec" + i);
+                labelAnos.textContent = "Anos " + i + ":";
+
+                let inputAnos = document.createElement("input");
+                inputAnos.type = "number";
+                inputAnos.id = "anosExec" + i;
+                inputAnos.name = "anosExec" + i;
+                inputAnos.classList.add("small-input");
+
+                let labelMeses = document.createElement("label");
+                labelMeses.setAttribute("for", "mesesExec" + i);
+                labelMeses.textContent = "Meses " + i + ":";
+
+                let inputMeses = document.createElement("input");
+                inputMeses.type = "number";
+                inputMeses.id = "mesesExec" + i;
+                inputMeses.name = "mesesExec" + i;
+                inputMeses.classList.add("small-input");
+
+                let labelDias = document.createElement("label");
+                labelDias.setAttribute("for", "diasExec" + i);
+                labelDias.textContent = "Dias " + i + ":";
+
+                let inputDias = document.createElement("input");
+                inputDias.type = "number";
+                inputDias.id = "diasExec" + i;
+                inputDias.name = "diasExec" + i;
+                inputDias.classList.add("small-input");
+
+                // Adicionar campo de remição antes do totalDias
+                let labelRemicao = document.createElement("label");
+                labelRemicao.setAttribute("for", "remicaoExec" + i);
+                labelRemicao.textContent = "D. remidos " + i + ":";
+
+                let inputRemicao = document.createElement("input");
+                inputRemicao.type = "number";
+                inputRemicao.id = "remicaoExec" + i;
+                inputRemicao.name = "remicaoExec" + i;
+                inputRemicao.classList.add("small-input");
+
+                let labelTotalDias = document.createElement("label");
+                labelTotalDias.setAttribute("for", "totalDiasExec" + i);
+                labelTotalDias.textContent = "T+ " + i + ":";
+
+                let inputTotalDias = document.createElement("input");
+                inputTotalDias.type = "number";
+                inputTotalDias.id = "totalDiasExec" + i;
+                inputTotalDias.name = "totalDiasExec" + i;
+                inputTotalDias.readOnly = true;
+                inputTotalDias.classList.add("small-input");
+
+                // Adicionando os campos ao contêiner
+                container.appendChild(labelExec);
+                container.appendChild(inputExec);
+                container.appendChild(labelObs);
+                container.appendChild(inputObs);
+                container.appendChild(labelAnos);
+                container.appendChild(inputAnos);
+                container.appendChild(labelMeses);
+                container.appendChild(inputMeses);
+                container.appendChild(labelDias);
+                container.appendChild(inputDias);
+                container.appendChild(labelRemicao);
+                container.appendChild(inputRemicao);
+                container.appendChild(labelTotalDias);
+                container.appendChild(inputTotalDias);
+
+                // Adicionando o contêiner ao campo principal
+                execFields.appendChild(container);
+
+                // Adicionando evento para calcular total em dias
+                inputAnos.addEventListener("input", calcularTotalDias.bind(null, i));
+                inputMeses.addEventListener("input", calcularTotalDias.bind(null, i));
+                inputDias.addEventListener("input", calcularTotalDias.bind(null, i));
+                inputRemicao.addEventListener("input", calcularTotalDias.bind(null, i));
+
+                // Adicionando evento para salvar dados automaticamente
+                inputExec.addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+                inputObs.addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+                inputAnos.addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+                inputMeses.addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+                inputDias.addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+                inputRemicao.addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+                inputTotalDias.addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+            }
+
+            // Preencher o formulário com o número 1 por padrão
+
+            document.getElementById("numero").value = "1";
+         
+
+            
+
+            carregarDados(); 
+            
+            // Isso já inclui atualizarGraficoGantt()
+
+            // Adicionar evento de blur no campo de número para atualizar o gráfico ao perder o foco
+            document.getElementById("numero").addEventListener("blur", carregarDados);
+
+
+
+
+
+            document.querySelectorAll("#meuFormulario input, #meuFormulario select, #meuFormulario textarea").forEach(function(element) {
+                element.addEventListener("change", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+            });
+
+            // Adicionar evento de input em todos os campos do formulário para disparar a ação do botão "Salvar Dados"
+            document.querySelectorAll("#meuFormulario input, #meuFormulario select, #meuFormulario textarea").forEach(function(element) {
+                element.addEventListener("input", function() {
+                    salvarDados();
+                    salvarDados();
+                });
+            });
+
+            // Adicionar evento de input específico para o campo de anotações
+            document.getElementById("anotacoes").addEventListener("input", function() {
+                salvarDados();
+            });
+
+            // Adicionar evento de input em todos os campos de eventos para salvar automaticamente
+            for (let i = 1; i <= 15; i++) {
+                document.getElementById("evento_" + i).addEventListener("input", salvarDados);
+                document.getElementById("data_evento_" + i).addEventListener("input", salvarDados);
+            }
+
+            // Adicionar evento de input em todos os campos de interrupções para salvar automaticamente
+            for (let i = 1; i <= 10; i++) {
+                document.getElementById("data_comeco_interrupcao_" + i).addEventListener("input", salvarDados);
+                document.getElementById("data_termino_interrupcao_" + i).addEventListener("input", salvarDados);
+                document.getElementById("rotulo_interrupcao_" + i).addEventListener("input", salvarDados);
+            }
+
+            // Adicionar evento de input em todos os campos de detrações para salvar automaticamente
+            document.getElementById("detractionStartDate").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            // Eventos para novas detrações
+            document.getElementById("detractionStartDate2").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate2").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays2").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao2").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            document.getElementById("detractionStartDate3").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate3").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays3").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao3").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            document.getElementById("detractionStartDate4").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate4").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays4").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao4").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            document.getElementById("detractionStartDate5").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate5").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays5").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao5").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            document.getElementById("detractionStartDate6").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate6").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays6").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao6").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            document.getElementById("detractionStartDate7").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate7").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays7").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao7").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            document.getElementById("detractionStartDate8").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate8").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays8").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao8").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            document.getElementById("detractionStartDate9").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate9").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays9").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao9").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            document.getElementById("detractionStartDate10").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionEndDate10").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("detractionExecDays10").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+            document.getElementById("notaDetracao10").addEventListener("input", function() {
+                salvarDetracao();
+                atualizarGraficoGantt();
+            });
+
+            // Gambiarra para salvar dados das detrações a cada atualização dos campos
+            setInterval(function() {
+                salvarDados();
+            }, 5000); // Salva os dados a cada 5 segundos
+
+            // Adicionar evento de input em todos os campos de eventos para salvar e atualizar automaticamente
+            for (let i = 1; i <= 15; i++) {
+                document.getElementById("evento_" + i).addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+                document.getElementById("data_evento_" + i).addEventListener("input", function() {
+                    salvarDados();
+                    atualizarGraficoGantt();
+                });
+            }
+
+            // Preencher o campo da lista com "1" por padrão
+            document.getElementById("numeroExistente").value = "1";
+            document.getElementById("numero").value = "1";
+            carregarDados();
+        });
+
+        window.addEventListener("load", function() {
+            document.getElementById("numeroExistente").value = "";
+        });
+
+        // Modificar função calcularTotalDias para considerar remição
+        function calcularTotalDias(index) {
+            let anos = parseInt(document.getElementById("anosExec" + index).value) || 0;
+            let meses = parseInt(document.getElementById("mesesExec" + index).value) || 0;
+            let dias = parseInt(document.getElementById("diasExec" + index).value) || 0;
+            let remicao = parseInt(document.getElementById("remicaoExec" + index).value) || 0;
+
+            // Simplified calculation without detraction
+            let totalDias = (anos * 365) + (meses * 30) + dias - remicao;
+
+            document.getElementById("totalDiasExec" + index).value = totalDias;
+            atualizarGraficoGantt();
+        }
+
+        function salvarDados() {
+    let numero = document.getElementById("numero").value;
+
+    if (numero) {
+        // Salvando detração - A ÚNICA QUE FUNCIONA
+        localStorage.setItem("detractionStartDate_" + numero, JSON.stringify(document.getElementById("detractionStartDate").value));
+        localStorage.setItem("detractionEndDate_" + numero, JSON.stringify(document.getElementById("detractionEndDate").value));
+        localStorage.setItem("detractionExecDays_" + numero, JSON.stringify(document.getElementById("detractionExecDays").value));
+        localStorage.setItem("notaDetracao_" + numero, JSON.stringify(document.getElementById("notaDetracao").value));
+
+        // Salvando novas detrações
+        localStorage.setItem("detractionStartDate2_" + numero, JSON.stringify(document.getElementById("detractionStartDate2").value));
+        localStorage.setItem("detractionEndDate2_" + numero, JSON.stringify(document.getElementById("detractionEndDate2").value));
+        localStorage.setItem("detractionExecDays2_" + numero, JSON.stringify(document.getElementById("detractionExecDays2").value));
+        localStorage.setItem("notaDetracao2_" + numero, JSON.stringify(document.getElementById("notaDetracao2").value));
+
+        localStorage.setItem("detractionStartDate3_" + numero, JSON.stringify(document.getElementById("detractionStartDate3").value));
+        localStorage.setItem("detractionEndDate3_" + numero, JSON.stringify(document.getElementById("detractionEndDate3").value));
+        localStorage.setItem("detractionExecDays3_" + numero, JSON.stringify(document.getElementById("detractionExecDays3").value));
+        localStorage.setItem("notaDetracao3_" + numero, JSON.stringify(document.getElementById("notaDetracao3").value));
+
+        localStorage.setItem("detractionStartDate4_" + numero, JSON.stringify(document.getElementById("detractionStartDate4").value));
+        localStorage.setItem("detractionEndDate4_" + numero, JSON.stringify(document.getElementById("detractionEndDate4").value));
+        localStorage.setItem("detractionExecDays4_" + numero, JSON.stringify(document.getElementById("detractionExecDays4").value));
+        localStorage.setItem("notaDetracao4_" + numero, JSON.stringify(document.getElementById("notaDetracao4").value));
+
+        localStorage.setItem("detractionStartDate5_" + numero, JSON.stringify(document.getElementById("detractionStartDate5").value));
+        localStorage.setItem("detractionEndDate5_" + numero, JSON.stringify(document.getElementById("detractionEndDate5").value));
+        localStorage.setItem("detractionExecDays5_" + numero, JSON.stringify(document.getElementById("detractionExecDays5").value));
+        localStorage.setItem("notaDetracao5_" + numero, JSON.stringify(document.getElementById("notaDetracao5").value));
+
+        localStorage.setItem("detractionStartDate6_" + numero, JSON.stringify(document.getElementById("detractionStartDate6").value));
+        localStorage.setItem("detractionEndDate6_" + numero, JSON.stringify(document.getElementById("detractionEndDate6").value));
+        localStorage.setItem("detractionExecDays6_" + numero, JSON.stringify(document.getElementById("detractionExecDays6").value));
+        localStorage.setItem("notaDetracao6_" + numero, JSON.stringify(document.getElementById("notaDetracao6").value));
+
+        localStorage.setItem("detractionStartDate7_" + numero, JSON.stringify(document.getElementById("detractionStartDate7").value));
+        localStorage.setItem("detractionEndDate7_" + numero, JSON.stringify(document.getElementById("detractionEndDate7").value));
+        localStorage.setItem("detractionExecDays7_" + numero, JSON.stringify(document.getElementById("detractionExecDays7").value));
+        localStorage.setItem("notaDetracao7_" + numero, JSON.stringify(document.getElementById("notaDetracao7").value));
+
+        localStorage.setItem("detractionStartDate8_" + numero, JSON.stringify(document.getElementById("detractionStartDate8").value));
+        localStorage.setItem("detractionEndDate8_" + numero, JSON.stringify(document.getElementById("detractionEndDate8").value));
+        localStorage.setItem("detractionExecDays8_" + numero, JSON.stringify(document.getElementById("detractionExecDays8").value));
+        localStorage.setItem("notaDetracao8_" + numero, JSON.stringify(document.getElementById("notaDetracao8").value));
+
+        localStorage.setItem("detractionStartDate9_" + numero, JSON.stringify(document.getElementById("detractionStartDate9").value));
+        localStorage.setItem("detractionEndDate9_" + numero, JSON.stringify(document.getElementById("detractionEndDate9").value));
+        localStorage.setItem("detractionExecDays9_" + numero, JSON.stringify(document.getElementById("detractionExecDays9").value));
+        localStorage.setItem("notaDetracao9_" + numero, JSON.stringify(document.getElementById("notaDetracao9").value));
+
+        localStorage.setItem("detractionStartDate10_" + numero, JSON.stringify(document.getElementById("detractionStartDate10").value));
+        localStorage.setItem("detractionEndDate10_" + numero, JSON.stringify(document.getElementById("detractionEndDate10").value));
+        localStorage.setItem("detractionExecDays10_" + numero, JSON.stringify(document.getElementById("detractionExecDays10").value));
+        localStorage.setItem("notaDetracao10_" + numero, JSON.stringify(document.getElementById("notaDetracao10").value));
+
+        // Salvando nome
+        localStorage.setItem("nome_" + numero, JSON.stringify(document.getElementById("nome").value));
+        // Salvando desfecho
+        localStorage.setItem("desfecho_" + numero, JSON.stringify(document.getElementById("desfecho").value));
+        // Salvando ICP
+        localStorage.setItem("icp_" + numero, JSON.stringify(document.getElementById("icp").value));
+
+        // Salvando interrupções
+        for (let i = 1; i <= 10; i++) {
+            localStorage.setItem("data_comeco_interrupcao_" + i + "_" + numero, JSON.stringify(document.getElementById("data_comeco_interrupcao_" + i).value));
+            localStorage.setItem("data_termino_interrupcao_" + i + "_" + numero, JSON.stringify(document.getElementById("data_termino_interrupcao_" + i).value));
+            localStorage.setItem("rotulo_interrupcao_" + i + "_" + numero, JSON.stringify(document.getElementById("rotulo_interrupcao_" + i).value));
+        }
+
+        // Salvando execuções e observações
+        for (let i = 1; i <= 11; i++) {
+            localStorage.setItem("numExec" + i + "_" + numero, JSON.stringify(document.getElementById("numExec" + i).value));
+            localStorage.setItem("obsExec" + i + "_" + numero, JSON.stringify(document.getElementById("obsExec" + i).value));
+            localStorage.setItem("anosExec" + i + "_" + numero, JSON.stringify(document.getElementById("anosExec" + i).value));
+            localStorage.setItem("mesesExec" + i + "_" + numero, JSON.stringify(document.getElementById("mesesExec" + i).value));
+            localStorage.setItem("diasExec" + i + "_" + numero, JSON.stringify(document.getElementById("diasExec" + i).value));
+            localStorage.setItem("remicaoExec" + i + "_" + numero, JSON.stringify(document.getElementById("remicaoExec" + i).value));
+            localStorage.setItem("totalDiasExec" + i + "_" + numero, JSON.stringify(document.getElementById("totalDiasExec" + i).value));
+        }
+
+        // Salvando evento
+        for (let i = 1; i <= 15; i++) {
+            localStorage.setItem("evento_" + i + "_" + numero, JSON.stringify(document.getElementById("evento_" + i).value));
+            localStorage.setItem("data_evento_" + i + "_" + numero, JSON.stringify(document.getElementById("data_evento_" + i).value));
+        }
+
+        // Salvando anotações
+        localStorage.setItem("anotacoes_" + numero, JSON.stringify(document.getElementById("anotacoes").value));
+
+        // Salvando checkboxes
+        for (let i = 1; i <= 20; i++) {
+            localStorage.setItem("checkbox" + i + "_" + numero, JSON.stringify(document.getElementById("checkbox" + i).checked));
+        }
+
+        // Adicionar o número à lista de números cadastrados
+        let numeroExistente = document.getElementById("numeroExistente");
+        let option = document.createElement("option");
+        option.value = numero;
+        option.textContent = numero;
+        if (!Array.from(numeroExistente.options).some(opt => opt.value === numero)) {
+            numeroExistente.appendChild(option);
+        }
+
+       // alert("Dados salvos para o número " + numero);
+    } else {
+        alert("Por favor, insira um número antes de salvar.");
+    }
+}
+
+function carregarDados() {
+    let numero = document.getElementById("numero").value;
+    if (numero) {
+        // Carregar detração
+        document.getElementById("detractionStartDate").value = JSON.parse(localStorage.getItem("detractionStartDate_" + numero)) || "";
+        document.getElementById("detractionEndDate").value = JSON.parse(localStorage.getItem("detractionEndDate_" + numero)) || "";
+        document.getElementById("detractionExecDays").value = JSON.parse(localStorage.getItem("detractionExecDays_" + numero)) || "";
+        document.getElementById("notaDetracao").value = JSON.parse(localStorage.getItem("notaDetracao_" + numero)) || "";
+
+        // Carregar novas detrações
+        document.getElementById("detractionStartDate2").value = JSON.parse(localStorage.getItem("detractionStartDate2_" + numero)) || "";
+        document.getElementById("detractionEndDate2").value = JSON.parse(localStorage.getItem("detractionEndDate2_" + numero)) || "";
+        document.getElementById("detractionExecDays2").value = JSON.parse(localStorage.getItem("detractionExecDays2_" + numero)) || "";
+        document.getElementById("notaDetracao2").value = JSON.parse(localStorage.getItem("notaDetracao2_" + numero)) || "";
+
+        document.getElementById("detractionStartDate3").value = JSON.parse(localStorage.getItem("detractionStartDate3_" + numero)) || "";
+        document.getElementById("detractionEndDate3").value = JSON.parse(localStorage.getItem("detractionEndDate3_" + numero)) || "";
+        document.getElementById("detractionExecDays3").value = JSON.parse(localStorage.getItem("detractionExecDays3_" + numero)) || "";
+        document.getElementById("notaDetracao3").value = JSON.parse(localStorage.getItem("notaDetracao3_" + numero)) || "";
+
+        document.getElementById("detractionStartDate4").value = JSON.parse(localStorage.getItem("detractionStartDate4_" + numero)) || "";
+        document.getElementById("detractionEndDate4").value = JSON.parse(localStorage.getItem("detractionEndDate4_" + numero)) || "";
+        document.getElementById("detractionExecDays4").value = JSON.parse(localStorage.getItem("detractionExecDays4_" + numero)) || "";
+        document.getElementById("notaDetracao4").value = JSON.parse(localStorage.getItem("notaDetracao4_" + numero)) || "";
+
+        document.getElementById("detractionStartDate5").value = JSON.parse(localStorage.getItem("detractionStartDate5_" + numero)) || "";
+        document.getElementById("detractionEndDate5").value = JSON.parse(localStorage.getItem("detractionEndDate5_" + numero)) || "";
+        document.getElementById("detractionExecDays5").value = JSON.parse(localStorage.getItem("detractionExecDays5_" + numero)) || "";
+        document.getElementById("notaDetracao5").value = JSON.parse(localStorage.getItem("notaDetracao5_" + numero)) || "";
+
+        document.getElementById("detractionStartDate6").value = JSON.parse(localStorage.getItem("detractionStartDate6_" + numero)) || "";
+        document.getElementById("detractionEndDate6").value = JSON.parse(localStorage.getItem("detractionEndDate6_" + numero)) || "";
+        document.getElementById("detractionExecDays6").value = JSON.parse(localStorage.getItem("detractionExecDays6_" + numero)) || "";
+        document.getElementById("notaDetracao6").value = JSON.parse(localStorage.getItem("notaDetracao6_" + numero)) || "";
+
+        document.getElementById("detractionStartDate7").value = JSON.parse(localStorage.getItem("detractionStartDate7_" + numero)) || "";
+        document.getElementById("detractionEndDate7").value = JSON.parse(localStorage.getItem("detractionEndDate7_" + numero)) || "";
+        document.getElementById("detractionExecDays7").value = JSON.parse(localStorage.getItem("detractionExecDays7_" + numero)) || "";
+        document.getElementById("notaDetracao7").value = JSON.parse(localStorage.getItem("notaDetracao7_" + numero)) || "";
+
+        document.getElementById("detractionStartDate8").value = JSON.parse(localStorage.getItem("detractionStartDate8_" + numero)) || "";
+        document.getElementById("detractionEndDate8").value = JSON.parse(localStorage.getItem("detractionEndDate8_" + numero)) || "";
+        document.getElementById("detractionExecDays8").value = JSON.parse(localStorage.getItem("detractionExecDays8_" + numero)) || "";
+        document.getElementById("notaDetracao8").value = JSON.parse(localStorage.getItem("notaDetracao8_" + numero)) || "";
+
+        document.getElementById("detractionStartDate9").value = JSON.parse(localStorage.getItem("detractionStartDate9_" + numero)) || "";
+        document.getElementById("detractionEndDate9").value = JSON.parse(localStorage.getItem("detractionEndDate9_" + numero)) || "";
+        document.getElementById("detractionExecDays9").value = JSON.parse(localStorage.getItem("detractionExecDays9_" + numero)) || "";
+        document.getElementById("notaDetracao9").value = JSON.parse(localStorage.getItem("notaDetracao9_" + numero)) || "";
+
+        document.getElementById("detractionStartDate10").value = JSON.parse(localStorage.getItem("detractionStartDate10_" + numero)) || "";
+        document.getElementById("detractionEndDate10").value = JSON.parse(localStorage.getItem("detractionEndDate10_" + numero)) || "";
+        document.getElementById("detractionExecDays10").value = JSON.parse(localStorage.getItem("detractionExecDays10_" + numero)) || "";
+        document.getElementById("notaDetracao10").value = JSON.parse(localStorage.getItem("notaDetracao10_" + numero)) || "";
+
+        document.getElementById("nome").value = JSON.parse(localStorage.getItem("nome_" + numero)) || "";
+        document.getElementById("desfecho").value = JSON.parse(localStorage.getItem("desfecho_" + numero)) || "";
+        document.getElementById("icp").value = JSON.parse(localStorage.getItem("icp_" + numero)) || "";
+
+        // Carregar interrupções
+        for (let i = 1; i <= 10; i++) {
+            document.getElementById("data_comeco_interrupcao_" + i).value = JSON.parse(localStorage.getItem("data_comeco_interrupcao_" + i + "_" + numero)) || "";
+            document.getElementById("data_termino_interrupcao_" + i).value = JSON.parse(localStorage.getItem("data_termino_interrupcao_" + i + "_" + numero)) || "";
+            document.getElementById("rotulo_interrupcao_" + i).value = JSON.parse(localStorage.getItem("rotulo_interrupcao_" + i + "_" + numero)) || "";
+        }
+
+        for (let i = 1; i <= 11; i++) {
+            document.getElementById("numExec" + i).value = JSON.parse(localStorage.getItem("numExec" + i + "_" + numero)) || "";
+            document.getElementById("obsExec" + i).value = JSON.parse(localStorage.getItem("obsExec" + i + "_" + numero)) || "";
+            document.getElementById("anosExec" + i).value = JSON.parse(localStorage.getItem("anosExec" + i + "_" + numero)) || "";
+            document.getElementById("mesesExec" + i).value = JSON.parse(localStorage.getItem("mesesExec" + i + "_" + numero)) || "";
+            document.getElementById("diasExec" + i).value = JSON.parse(localStorage.getItem("diasExec" + i + "_" + numero)) || "";
+            document.getElementById("remicaoExec" + i).value = JSON.parse(localStorage.getItem("remicaoExec" + i + "_" + numero)) || "";
+            document.getElementById("totalDiasExec" + i).value = JSON.parse(localStorage.getItem("totalDiasExec" + i + "_" + numero)) || "";
+        }
+
+        // Carregar detração
+        document.getElementById("detractionStartDate").value = JSON.parse(localStorage.getItem("detractionStartDate_" + numero)) || "";
+        document.getElementById("detractionEndDate").value = JSON.parse(localStorage.getItem("detractionEndDate_" + numero)) || "";
+        document.getElementById("detractionExecDays").value = JSON.parse(localStorage.getItem("detractionExecDays_" + numero)) || "";
+
+        // Carregar evento
+        document.getElementById("evento_1").value = JSON.parse(localStorage.getItem("evento_1_" + numero)) || "";
+        document.getElementById("data_evento_1").value = JSON.parse(localStorage.getItem("data_evento_1_" + numero)) || "";
+
+        // Carregar novos eventos
+        for (let i = 2; i <= 15; i++) {
+            document.getElementById("evento_" + i).value = JSON.parse(localStorage.getItem("evento_" + i + "_" + numero)) || "";
+            document.getElementById("data_evento_" + i).value = JSON.parse(localStorage.getItem("data_evento_" + i + "_" + numero)) || "";
+        }
+
+        // Carregar anotações
+        document.getElementById("anotacoes").value = JSON.parse(localStorage.getItem("anotacoes_" + numero)) || "";
+
+        // Carregar checkboxes
+        for (let i = 1; i <= 20; i++) {
+            document.getElementById("checkbox" + i).checked = JSON.parse(localStorage.getItem("checkbox" + i + "_" + numero)) || false;
+        }
+
+        carregarDetracao(); // Carregar dados de detração automaticamente
+        atualizarGraficoGantt(); // Adicionar esta linha
+    } else {
+        alert("Por favor, insira um número antes de carregar.");
+    }
+}
+
+function carregarDadosExistente() {
+    let numero = document.getElementById("numeroExistente").value;
+    if (numero) {
+        document.getElementById("numero").value = numero;
+        carregarDados();
+        mostrarGrafico(); // Executar a mesma função do botão "Mostrar Dados"
+    }
+}
+
+        function carregarNumerosCadastrados() {
+            let numeroExistente = document.getElementById("numeroExistente");
+            // Verificar se existem números salvos no localStorage
+            for (let i = 0; i < localStorage.length; i++) {
+                let chave = localStorage.key(i);
+                if (chave.startsWith("numExec")) {
+                    let numero = chave.split("_")[1];
+                    // Evitar adicionar números duplicados
+                    if (!numeroExistente.querySelector(`option[value="${numero}"]`)) {
+                        let option = document.createElement("option");
+                        option.value = numero;
+                        option.textContent = numero;
+                        numeroExistente.appendChild(option);
+                    }
+                }
+            }
+        }
+
+        function exportarDados() {
+    let dados = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        let chave = localStorage.key(i);
+        dados[chave] = localStorage.getItem(chave);
+    }
+    let blob = new Blob([JSON.stringify(dados, null, 2)], { type: "application/json" });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "dados.json";
+    link.click();
+}
+
+function importarDados() {
+    let arquivo = document.getElementById("importarArquivo").files[0];
+    if (!arquivo) {
+        alert("Por favor, selecione um arquivo JSON.");
+        return;
+    }
+    let leitor = new FileReader();
+    leitor.onload = function(evento) {
+        let dadosImportados = JSON.parse(evento.target.result);
+        for (let chave in dadosImportados) {
+            localStorage.setItem(chave, dadosImportados[chave]);
+        }
+        alert("Dados importados com sucesso!");
+        carregarNumerosCadastrados(); // Atualizar lista de números
+        carregarDados(); // Carregar os dados importados
+        atualizarGraficoGantt(); // Atualizar o gráfico após importar
+    };
+    leitor.readAsText(arquivo);
+}
+
+        function atualizarGraficoGantt() {
+        let ganttChart = document.getElementById("ganttChart");
+        ganttChart.innerHTML = "";
+        ganttChart.style.position = "relative"; // Ensure correct positioning
+
+        let icp = new Date(document.getElementById("icp").value + "T00:00:00");
+        
+        // Load interruptions
+        let interrupcoes = [];
+        for (let i = 1; i <= 10; i++) {
+            let comeco = new Date(document.getElementById("data_comeco_interrupcao_" + i).value + "T00:00:00");
+            let termino = new Date(document.getElementById("data_termino_interrupcao_" + i).value + "T00:00:00");
+            let rotulo = document.getElementById("rotulo_interrupcao_" + i).value;
+            if (!isNaN(comeco) && !isNaN(termino)) {
+                interrupcoes.push({ comeco, termino, rotulo });
+            }
+        }
+        
+ // Carregar detração
+ let detractionStartDate = new Date(document.getElementById("detractionStartDate").value + "T00:00:00");
+    let detractionEndDate = new Date(document.getElementById("detractionEndDate").value + "T00:00:00");
+    let detractionExecDays = parseInt(document.getElementById("detractionExecDays").value);
+    let notaDetracao = document.getElementById("notaDetracao").value;
+    if (!isNaN(detractionStartDate) && !isNaN(detractionEndDate) && detractionExecDays) {
+        interrupcoes.push({ comeco: detractionStartDate, termino: detractionEndDate, detraction: true, execIndex: detractionExecDays, nota: notaDetracao });
+    }
+
+    // Carregar novas detrações
+    let detractionStartDate2 = new Date(document.getElementById("detractionStartDate2").value + "T00:00:00");
+    let detractionEndDate2 = new Date(document.getElementById("detractionEndDate2").value + "T00:00:00");
+    let detractionExecDays2 = parseInt(document.getElementById("detractionExecDays2").value);
+    let notaDetracao2 = document.getElementById("notaDetracao2").value;
+    if (!isNaN(detractionStartDate2) && !isNaN(detractionEndDate2) && detractionExecDays2) {
+        interrupcoes.push({ comeco: detractionStartDate2, termino: detractionEndDate2, detraction: true, execIndex: detractionExecDays2, nota: notaDetracao2 });
+    }
+
+    let detractionStartDate3 = new Date(document.getElementById("detractionStartDate3").value + "T00:00:00");
+    let detractionEndDate3 = new Date(document.getElementById("detractionEndDate3").value + "T00:00:00");
+    let detractionExecDays3 = parseInt(document.getElementById("detractionExecDays3").value);
+    let notaDetracao3 = document.getElementById("notaDetracao3").value;
+    if (!isNaN(detractionStartDate3) && !isNaN(detractionEndDate3) && detractionExecDays3) {
+        interrupcoes.push({ comeco: detractionStartDate3, termino: detractionEndDate3, detraction: true, execIndex: detractionExecDays3, nota: notaDetracao3 });
+    }
+
+    let detractionStartDate4 = new Date(document.getElementById("detractionStartDate4").value + "T00:00:00");
+    let detractionEndDate4 = new Date(document.getElementById("detractionEndDate4").value + "T00:00:00");
+    let detractionExecDays4 = parseInt(document.getElementById("detractionExecDays4").value);
+    let notaDetracao4 = document.getElementById("notaDetracao4").value;
+    if (!isNaN(detractionStartDate4) && !isNaN(detractionEndDate4) && detractionExecDays4) {
+        interrupcoes.push({ comeco: detractionStartDate4, termino: detractionEndDate4, detraction: true, execIndex: detractionExecDays4, nota: notaDetracao4 });
+    }
+
+    let detractionStartDate5 = new Date(document.getElementById("detractionStartDate5").value + "T00:00:00");
+    let detractionEndDate5 = new Date(document.getElementById("detractionEndDate5").value + "T00:00:00");
+    let detractionExecDays5 = parseInt(document.getElementById("detractionExecDays5").value);
+    let notaDetracao5 = document.getElementById("notaDetracao5").value;
+    if (!isNaN(detractionStartDate5) && !isNaN(detractionEndDate5) && detractionExecDays5) {
+        interrupcoes.push({ comeco: detractionStartDate5, termino: detractionEndDate5, detraction: true, execIndex: detractionExecDays5, nota: notaDetracao5 });
+    }
+
+    let detractionStartDate6 = new Date(document.getElementById("detractionStartDate6").value + "T00:00:00");
+    let detractionEndDate6 = new Date(document.getElementById("detractionEndDate6").value + "T00:00:00");
+    let detractionExecDays6 = parseInt(document.getElementById("detractionExecDays6").value);
+    let notaDetracao6 = document.getElementById("notaDetracao6").value;
+    if (!isNaN(detractionStartDate6) && !isNaN(detractionEndDate6) && detractionExecDays6) {
+        interrupcoes.push({ comeco: detractionStartDate6, termino: detractionEndDate6, detraction: true, execIndex: detractionExecDays6, nota: notaDetracao6 });
+    }
+
+    let detractionStartDate7 = new Date(document.getElementById("detractionStartDate7").value + "T00:00:00");
+    let detractionEndDate7 = new Date(document.getElementById("detractionEndDate7").value + "T00:00:00");
+    let detractionExecDays7 = parseInt(document.getElementById("detractionExecDays7").value);
+    let notaDetracao7 = document.getElementById("notaDetracao7").value;
+    if (!isNaN(detractionStartDate7) && !isNaN(detractionEndDate7) && detractionExecDays7) {
+        interrupcoes.push({ comeco: detractionStartDate7, termino: detractionEndDate7, detraction: true, execIndex: detractionExecDays7, nota: notaDetracao7 });
+    }
+
+    let detractionStartDate8 = new Date(document.getElementById("detractionStartDate8").value + "T00:00:00");
+    let detractionEndDate8 = new Date(document.getElementById("detractionEndDate8").value + "T00:00:00");
+    let detractionExecDays8 = parseInt(document.getElementById("detractionExecDays8").value);
+    let notaDetracao8 = document.getElementById("notaDetracao8").value;
+    if (!isNaN(detractionStartDate8) && !isNaN(detractionEndDate8) && detractionExecDays8) {
+        interrupcoes.push({ comeco: detractionStartDate8, termino: detractionEndDate8, detraction: true, execIndex: detractionExecDays8, nota: notaDetracao8 });
+    }
+
+    let detractionStartDate9 = new Date(document.getElementById("detractionStartDate9").value + "T00:00:00");
+    let detractionEndDate9 = new Date(document.getElementById("detractionEndDate9").value + "T00:00:00");
+    let detractionExecDays9 = parseInt(document.getElementById("detractionExecDays9").value);
+    let notaDetracao9 = document.getElementById("notaDetracao9").value;
+    if (!isNaN(detractionStartDate9) && !isNaN(detractionEndDate9) && detractionExecDays9) {
+        interrupcoes.push({ comeco: detractionStartDate9, termino: detractionEndDate9, detraction: true, execIndex: detractionExecDays9, nota: notaDetracao9 });
+    }
+
+    let detractionStartDate10 = new Date(document.getElementById("detractionStartDate10").value + "T00:00:00");
+    let detractionEndDate10 = new Date(document.getElementById("detractionEndDate10").value + "T00:00:00");
+    let detractionExecDays10 = parseInt(document.getElementById("detractionExecDays10").value);
+    let notaDetracao10 = document.getElementById("notaDetracao10").value;
+    if (!isNaN(detractionStartDate10) && !isNaN(detractionEndDate10) && detractionExecDays10) {
+        interrupcoes.push({ comeco: detractionStartDate10, termino: detractionEndDate10, detraction: true, execIndex: detractionExecDays10, nota: notaDetracao10 });
+    }
+
+        // Sort interruptions
+        interrupcoes.sort((a, b) => a.comeco - b.comeco);
+        
+        let dataAtual = new Date(icp);
+        let posicaoAtual = 0;
+
+        let totalPenaCumprida = 0;
+        let totalDetracoes = 0;
+        let totalInterrupcoes = 0;
+        let totalRemicoes = 0;
+        let ultimaDataBarraCinza = null;
+
+        for (let i = 1; i <= 11; i++) {
+            let totalDias = parseInt(document.getElementById("totalDiasExec" + i).value) || 0;
+            totalPenaCumprida += totalDias;
+            let remicao = parseInt(document.getElementById("remicaoExec" + i).value) || 0;
+            totalRemicoes += remicao;
+
+            // Subtract detraction days from the corresponding execution
+            interrupcoes.forEach(interrupcao => {
+                if (interrupcao.detraction && interrupcao.execIndex === i) {
+                    let detractionDays = Math.round((interrupcao.termino - interrupcao.comeco) / (1000 * 60 * 60 * 24));
+                    totalDias -= detractionDays;
+                    totalDetracoes += detractionDays;
+                }
+            });
+
+            if (totalDias > 0) {
+                let barContainer = document.createElement("div");
+                barContainer.classList.add("gantt-bar");
+                barContainer.style.top = ((i + 1) * 40) + "px"; // Adjust vertical position
+                barContainer.style.position = "relative";
+                barContainer.style.zIndex = "2"; // Place in front of red zones
+
+                let diasProcessados = 0;
+                let currentPos = posicaoAtual;
+
+                while (diasProcessados < totalDias) {
+                    // Find next interruption if any
+                    let proximaInterrupcao = interrupcoes.find(int => 
+                        dataAtual < int.termino && int.comeco <= new Date(dataAtual.getTime() + ((totalDias - diasProcessados) * 24 * 60 * 60 * 1000))
+                    );
+
+                    if (proximaInterrupcao) {
+                        // Create bar up to interruption
+                        let diasAteInterrupcao = Math.floor((proximaInterrupcao.comeco - dataAtual) / (1000 * 60 * 60 * 24));
+                        if (diasAteInterrupcao > 0) {
+                            let barSegment = document.createElement("div");
+                            barSegment.style.position = "absolute";
+                            barSegment.style.left = currentPos + "px";
+                            barSegment.style.width = diasAteInterrupcao + "px";
+                            barSegment.style.height = "20px";
+                            barSegment.style.backgroundColor = "WHITE"; /* cor da barra */
+                            barSegment.style.border = "1px solid black";
+
+                            // Add execution number
+                            let execNumber = document.createElement("span");
+                            execNumber.className = "exec-number";
+                            // execNumber.textContent = `Exec ${i}`;
+                            barSegment.appendChild(execNumber);
+
+                            // Add observation
+                            let obsText = document.getElementById(`obsExec${i}`).value;
+                            if (obsText) {
+                                let obsLabel = document.createElement("span");
+                                obsLabel.className = "segment-label";
+                                obsLabel.textContent = obsText;
+                                barSegment.appendChild(obsLabel);
+                            }
+
+                            // Add elapsed time
+                            let elapsedTime = document.createElement("span");
+                            elapsedTime.className = "elapsed-time";
+                            elapsedTime.textContent = ": " + formatElapsedTime(diasAteInterrupcao);
+
+                            // barSegment.appendChild(document.createElement("br")); // Add line break
+                            
+                            barSegment.appendChild(elapsedTime);                            
+                            barContainer.appendChild(barSegment);                            
+                            diasProcessados += diasAteInterrupcao;
+                            currentPos += diasAteInterrupcao;
+                            dataAtual.setDate(dataAtual.getDate() + diasAteInterrupcao);
+                        }
+
+                        // Skip the interruption entirely
+                        currentPos += Math.ceil((proximaInterrupcao.termino - proximaInterrupcao.comeco) / (1000 * 60 * 60 * 24));
+                        dataAtual = new Date(proximaInterrupcao.termino);
+                    } else {
+                        // Create final bar segment
+                        let diasRestantes = totalDias - diasProcessados;
+                        let barSegment = document.createElement("div");
+                        barSegment.style.position = "absolute";
+                        barSegment.style.left = currentPos + "px";
+                        barSegment.style.width = diasRestantes + "px";
+                        barSegment.style.height = "20px";
+                        barSegment.style.backgroundColor = "WHITE"; /* cor da barra */
+                        barSegment.style.border = "1px solid black";
+
+                        // Add execution number
+                        let execNumber = document.createElement("span");
+                        execNumber.className = "exec-number";
+                        // execNumber.textContent = `Exec ${i}`;
+                        barSegment.appendChild(execNumber);
+
+                        // Add observation
+                        let obsText = document.getElementById(`obsExec${i}`).value;
+                        if (obsText) {
+                            let obsLabel = document.createElement("span");
+                            obsLabel.className = "segment-label";
+                            obsLabel.textContent = obsText;
+                            barSegment.appendChild(obsLabel);
+                        }
+
+                        // Add elapsed time
+                        let elapsedTime = document.createElement("span");
+                        elapsedTime.className = "elapsed-time";
+                        elapsedTime.textContent = ": " + formatElapsedTime(diasRestantes);
+                       
+                       -
+                        
+                        barSegment.appendChild(elapsedTime);
+
+                        barContainer.appendChild(barSegment);
+
+                        diasProcessados = totalDias;
+                        dataAtual.setDate(dataAtual.getDate() + diasRestantes);
+                        currentPos += diasRestantes;
+
+                        // Update the last date of the gray bar
+                        ultimaDataBarraCinza = new Date(dataAtual);
+                    }
+                }
+
+                let labelFinal = document.createElement("span");
+                labelFinal.textContent = dataAtual.toLocaleDateString("pt-BR");
+                labelFinal.style.position = "absolute";
+                labelFinal.style.left = (currentPos + 5) + "px";
+                barContainer.appendChild(labelFinal);
+
+                ganttChart.appendChild(barContainer);
+                posicaoAtual = currentPos;
+            }
+        }
+
+        // Add interruption bars with dates
+        interrupcoes.forEach(interrupcao => {
+            let interrupcaoBar = document.createElement("div");
+            
+            interrupcaoBar.className = "interruption-bar";
+            let leftPos = Math.round((interrupcao.comeco - icp) / (1000 * 60 * 60 * 24));
+            let width = Math.round((interrupcao.termino - interrupcao.comeco) / (1000 * 60 * 60 * 24));
+            interrupcaoBar.style.left = leftPos + 1 + "px";
+            interrupcaoBar.style.width = width + "px";
+            interrupcaoBar.style.top = "2px";
+            interrupcaoBar.style.backgroundColor = "white";
+            interrupcaoBar.style.zIndex = "1"; // Ensure interruption bars are behind the main bars
+
+            // Add interruption dates
+            let dataInicio = document.createElement("span");
+            dataInicio.className = "interruption-date";
+            dataInicio.textContent = interrupcao.comeco.toLocaleDateString("pt-BR");
+            dataInicio.style.left = "0px";
+            dataInicio.style.top = "25px";
+            
+            let dataFim = document.createElement("span");
+            dataFim.className = "interruption-date";
+            dataFim.textContent = interrupcao.termino.toLocaleDateString("pt-BR");
+            dataFim.style.left = width - 75 + "px";
+            dataFim.style.top = "37px";
+
+            interrupcaoBar.appendChild(dataInicio);
+            interrupcaoBar.appendChild(dataFim);
+
+            // Add detraction text if it's a detraction period
+            if (interrupcao.detraction) {
+                let textoDetracao = document.createElement("div");
+                textoDetracao.style.position = "absolute";
+                textoDetracao.style.left = "50%";
+                textoDetracao.style.top = "-15px";
+                textoDetracao.style.transform = "translate(-50%, -50%)";
+                textoDetracao.style.color = "black";
+                textoDetracao.style.fontWeight = "bold";
+                textoDetracao.style.fontSize = "12px";
+                textoDetracao.style.backgroundColor = "LIGHTGRAY";
+                textoDetracao.textContent = "DETRAÇÃO";
+
+                // Add custom note text
+                if (interrupcao.nota) {
+                    let textoNota = document.createElement("div");
+                    textoNota.style.position = "absolute";
+                    textoNota.style.left = "50%";
+                    textoNota.style.top = "700%";
+                    textoNota.style.transform = "translate(-50%, -50%)";
+                    textoNota.style.color = "black";
+                    textoNota.style.fontSize = "12px";
+                    textoNota.textContent = interrupcao.nota;
+                    textoDetracao.appendChild(textoNota);
+                }
+
+                interrupcaoBar.appendChild(textoDetracao);
+            } else {
+                // Add interruption text
+                let textoInterrup = document.createElement("div");
+                textoInterrup.style.position = "absolute";
+                textoInterrup.style.left = "50%";
+                textoInterrup.style.top = "-15px";
+                textoInterrup.style.transform = "translate(-50%, -50%)";
+                textoInterrup.style.color = "black";
+                textoInterrup.style.fontWeight = "bold";
+                textoInterrup.style.fontSize = "12px";
+                textoInterrup.style.backgroundColor = "LIGHTGRAY";
+                textoInterrup.textContent = "INTERRUPÇÃO";
+                interrupcaoBar.appendChild(textoInterrup);
+
+                // Add custom label text
+                if (interrupcao.rotulo) {
+                    let textoRotulo = document.createElement("div");
+                    textoRotulo.style.position = "absolute";
+                    textoRotulo.style.left = "50%";
+                    textoRotulo.style.top = "300%";
+                    textoRotulo.style.transform = "translate(-50%, -50%)";
+                    textoRotulo.style.color = "black";
+                    textoRotulo.style.fontSize = "12px";
+                    textoRotulo.textContent = interrupcao.rotulo;
+                    interrupcaoBar.appendChild(textoRotulo);
+                }
+
+                // Calculate total interruption days
+                let interruptionDays = Math.round((interrupcao.termino - interrupcao.comeco) / (1000 * 60 * 60 * 24));
+                totalInterrupcoes += interruptionDays;
+            }
+
+            ganttChart.appendChild(interrupcaoBar);
+
+            // Add vertical lines at the start and end of the interruption bar
+            let startLine = document.createElement("div");
+            startLine.className = "vertical-line";
+            startLine.style.left = leftPos + "px";
+            interrupcaoBar.appendChild(startLine);
+
+            let endLine = document.createElement("div");
+            endLine.className = "vertical-line";
+            endLine.style.left = (leftPos + width) + "px";
+            interrupcaoBar.appendChild(endLine);
+        });
+
+        adicionarPontosInterrupcao(interrupcoes, icp);
+        adicionarEventos(icp);
+
+        document.getElementById("tempoTotalPenaCumprida").textContent = `Pena: ${formatElapsedTime(totalPenaCumprida)}`;
+        document.getElementById("tempoTotalDetracoes").textContent = `Detrações: ${totalDetracoes} dias`;
+        document.getElementById("tempoTotalInterrupcoes").textContent = `Interrupções: ${totalInterrupcoes} dias`;
+        document.getElementById("quantidadeTotalRemicoes").textContent = `Remições: ${totalRemicoes} dias`;
+
+        // Update TCP field
+        if (ultimaDataBarraCinza) {
+            document.getElementById("tcp").textContent = `TCP: ${ultimaDataBarraCinza.toLocaleDateString("pt-BR")}`;
+
+            // Calculate Ini_frações
+            let iniFracoesDate = new Date(ultimaDataBarraCinza);
+            iniFracoesDate.setDate(iniFracoesDate.getDate() - totalPenaCumprida);
+            document.getElementById("ini_fracoes").textContent = `Ini_frações: ${iniFracoesDate.toLocaleDateString("pt-BR")}`;
+
+            // Add marker for Ini_frações
+            let iniFracoesMarker = document.createElement("div");
+            iniFracoesMarker.className = "event-label";
+            let leftPos = Math.round((iniFracoesDate - icp) / (1000 * 60 * 60 * 24));
+            iniFracoesMarker.style.left = (leftPos - 8) + "px";
+            iniFracoesMarker.style.rotate = "-45deg";
+            iniFracoesMarker.style.top = "-245px";
+            iniFracoesMarker.innerHTML = `${iniFracoesDate.toLocaleDateString("pt-BR")}: <span style="color: red;">Ini/fraç.</span>`;
+
+            let iniFracoesArrow = document.createElement("div");
+            iniFracoesArrow.className = "event-arrow";
+            iniFracoesArrow.style.left = (leftPos - 5) + "px";
+            iniFracoesArrow.style.top = "-235px";
+
+            ganttChart.appendChild(iniFracoesMarker);
+            ganttChart.appendChild(iniFracoesArrow);
+
+            // Calculate 1/6, 1/3, 2/5, 3/5, and 2/3 dates
+            let tcpDate = ultimaDataBarraCinza;
+            let intervalDays = Math.round((tcpDate - iniFracoesDate) / (1000 * 60 * 60 * 24));
+            let oneSixthDate = new Date(iniFracoesDate);
+            oneSixthDate.setDate(oneSixthDate.getDate() + Math.round(intervalDays / 6));
+            let oneThirdDate = new Date(iniFracoesDate);
+            oneThirdDate.setDate(oneThirdDate.getDate() + Math.round(intervalDays / 3));
+            let twoFifthsDate = new Date(iniFracoesDate);
+            twoFifthsDate.setDate(twoFifthsDate.getDate() + Math.round((intervalDays * 2) / 5));
+            let threeFifthsDate = new Date(iniFracoesDate);
+            threeFifthsDate.setDate(threeFifthsDate.getDate() + Math.round((intervalDays * 3) / 5));
+            let twoThirdDate = new Date(iniFracoesDate);
+            twoThirdDate.setDate(twoThirdDate.getDate() + Math.round((intervalDays * 2) / 3));
+
+            // Add marker for 1/6 date
+            let oneSixthMarker = document.createElement("div");
+            oneSixthMarker.className = "event-label";
+            leftPos = Math.round((oneSixthDate - icp) / (1000 * 60 * 60 * 24));
+            oneSixthMarker.style.left = (leftPos - 8) + "px";
+            oneSixthMarker.style.top = "-245px";
+            oneSixthMarker.style.rotate = "-45deg";
+            oneSixthMarker.innerHTML = `${oneSixthDate.toLocaleDateString("pt-BR")}: <span style="color: purple;">1/6</span>`;
+
+            let oneSixthArrow = document.createElement("div");
+            oneSixthArrow.className = "event-arrow";
+            oneSixthArrow.style.left = (leftPos - 5) + "px";
+            oneSixthArrow.style.top = "-235px";
+
+            ganttChart.appendChild(oneSixthMarker);
+            ganttChart.appendChild(oneSixthArrow);
+
+            // Add marker for 1/3 date
+            let oneThirdMarker = document.createElement("div");
+            oneThirdMarker.className = "event-label";
+            leftPos = Math.round((oneThirdDate - icp) / (1000 * 60 * 60 * 24));
+            oneThirdMarker.style.left = (leftPos - 8) + "px";
+            oneThirdMarker.style.top = "-245px";
+            oneThirdMarker.style.rotate = "-45deg";
+            oneThirdMarker.innerHTML = `${oneThirdDate.toLocaleDateString("pt-BR")}: <span style="color: green;">1/3</span>`;
+
+            let oneThirdArrow = document.createElement("div");
+            oneThirdArrow.className = "event-arrow";
+            oneThirdArrow.style.left = (leftPos - 5) + "px";
+            oneThirdArrow.style.top = "-235px";
+
+            ganttChart.appendChild(oneThirdMarker);
+            ganttChart.appendChild(oneThirdArrow);
+
+            // Add marker for 2/5 date
+            let twoFifthsMarker = document.createElement("div");
+            twoFifthsMarker.className = "event-label";
+            leftPos = Math.round((twoFifthsDate - icp) / (1000 * 60 * 60 * 24));
+            twoFifthsMarker.style.left = (leftPos - 8) + "px";
+            twoFifthsMarker.style.top = "-245px";
+            twoFifthsMarker.style.rotate = "-45deg";
+            twoFifthsMarker.innerHTML = `${twoFifthsDate.toLocaleDateString("pt-BR")}: <span style="color: orange;">2/5</span>`;
+
+            let twoFifthsArrow = document.createElement("div");
+            twoFifthsArrow.className = "event-arrow";
+            twoFifthsArrow.style.left = (leftPos - 5) + "px";
+            twoFifthsArrow.style.top = "-235px";
+
+            ganttChart.appendChild(twoFifthsMarker);
+            ganttChart.appendChild(twoFifthsArrow);
+
+            // Add marker for 3/5 date
+            let threeFifthsMarker = document.createElement("div");
+            threeFifthsMarker.className = "event-label";
+            leftPos = Math.round((threeFifthsDate - icp) / (1000 * 60 * 60 * 24));
+            threeFifthsMarker.style.left = (leftPos - 8) + "px";
+            threeFifthsMarker.style.top = "-245px";
+            threeFifthsMarker.style.rotate = "-45deg";
+            threeFifthsMarker.innerHTML = `${threeFifthsDate.toLocaleDateString("pt-BR")}: <span style="color: brown;">3/5</span>`;
+
+            let threeFifthsArrow = document.createElement("div");
+            threeFifthsArrow.className = "event-arrow";
+            threeFifthsArrow.style.left = (leftPos - 5) + "px";
+            threeFifthsArrow.style.top = "-235px";
+
+            ganttChart.appendChild(threeFifthsMarker);
+            ganttChart.appendChild(threeFifthsArrow);
+
+            // Add marker for 2/3 date
+            let twoThirdMarker = document.createElement("div");
+            twoThirdMarker.className = "event-label";
+            leftPos = Math.round((twoThirdDate - icp) / (1000 * 60 * 60 * 24));
+            twoThirdMarker.style.left = (leftPos - 8) + "px";
+            twoThirdMarker.style.top = "-245px";
+            twoThirdMarker.style.rotate = "-45deg";
+            twoThirdMarker.innerHTML = `${twoThirdDate.toLocaleDateString("pt-BR")}: <span style="color: GRAY;">2/3</span>`;
+
+            let twoThirdArrow = document.createElement("div");
+            twoThirdArrow.className = "event-arrow";
+            twoThirdArrow.style.left = (leftPos - 5) + "px";
+            twoThirdArrow.style.top = "-235px";
+
+            ganttChart.appendChild(twoThirdMarker);
+            ganttChart.appendChild(twoThirdArrow);
+        } else {
+            document.getElementById("tcp").textContent = "TCP: N/A";
+            document.getElementById("ini_fracoes").textContent = "Ini_frações: N/A";
+        }
+
+        // Adicionar marcador para a data atual (hoje)
+        let hoje = new Date();
+        let leftPosHoje = Math.round((hoje - icp) / (1000 * 60 * 60 * 24));
+        let hojeMarker = document.createElement("div");
+        hojeMarker.className = "event-label";
+        hojeMarker.style.left = (leftPosHoje - 8) + "px";
+        hojeMarker.style.top = "-60px";
+        hojeMarker.style.rotate = "-45deg";
+        hojeMarker.innerHTML = `<span style="color: GRAY;">ꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷꟷ</span>`;
+
+        let hojeArrow = document.createElement("div");
+        hojeArrow.className = "event-arrow";
+        hojeArrow.style.left = (leftPosHoje - 5) + "px";
+        hojeArrow.style.top = "40px";
+        hojeArrow.innerHTML = `<span style="color: GRAY;">HOJE <SMALL>${hoje.toLocaleDateString("pt-BR")} </SMALL> </span>`; // Complete the innerHTML
+        
+
+        ganttChart.appendChild(hojeMarker);
+        ganttChart.appendChild(hojeArrow);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    function adicionarPontosInterrupcao(interrupcoes, icp) {
+        let ganttChart = document.getElementById("ganttChart");
+        interrupcoes.forEach(interrupcao => {
+            let leftPos = Math.round((interrupcao.comeco - icp) / (1000 * 60 * 60 * 24));
+            let width = Math.round((interrupcao.termino - interrupcao.comeco) / (1000 * 60 * 60 * 24));
+            let blackLine = document.createElement("div");
+            blackLine.style.position = "absolute";
+            blackLine.style.left = leftPos + "px";
+            blackLine.style.width = width + "px";
+
+            blackLine.style.height = "100px";
+            blackLine.style.border = "1px";
+            blackLine.style.borderTop = "1px solid black";
+            blackLine.style.borderLeft = "1px solid black";
+            blackLine.style.borderRight = "1px solid black";
+
+            blackLine.style.backgroundColor = "white";
+            
+            blackLine.style.opacity = "0.50";
+            blackLine.style.top = "1px";
+
+            // Adicionar texto "INTERRUP" centralizado
+            ganttChart.appendChild(blackLine);
+        });
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function adicionarEventos(icp) {
+        let ganttChart = document.getElementById("ganttChart");
+        let evento1 = document.getElementById("evento_1").value;
+        let dataEvento1 = new Date(document.getElementById("data_evento_1").value + "T00:00:00");
+
+        if (evento1 && !isNaN(dataEvento1)) {
+            let leftPos = Math.round((dataEvento1 - icp) / (1000 * 60 * 60 * 24));
+            let eventLabel = document.createElement("div");
+            eventLabel.className = "event-label";
+            eventLabel.style.left = (leftPos - 8) + "px";
+            eventLabel.style.top = "-45px";
+            eventLabel.innerHTML = `${dataEvento1.toLocaleDateString("pt-BR")}: <span style="color: DARKGRAY;">${evento1}</span>`;
+
+            let eventArrow = document.createElement("div");
+            eventArrow.className = "event-arrow";
+            eventArrow.style.left = (leftPos - 5) + "px";
+            eventArrow.style.top = "-35px"; 
+
+            ganttChart.appendChild(eventLabel);
+            ganttChart.appendChild(eventArrow);
+        }
+
+        // Adicionar novos eventos
+        for (let i = 2; i <= 15; i++) {
+            let evento = document.getElementById("evento_" + i).value;
+            let dataEvento = new Date(document.getElementById("data_evento_" + i).value + "T00:00:00");
+            if (evento && !isNaN(dataEvento)) {
+                let leftPos = Math.round((dataEvento - icp) / (1000 * 60 * 60 * 24));
+                let eventLabel = document.createElement("div");
+                eventLabel.className = "event-label";
+                eventLabel.style.left = (leftPos - 8) + "px";
+                eventLabel.style.top = "-45px";
+                eventLabel.innerHTML = `${dataEvento.toLocaleDateString("pt-BR")}: <span style="color: GRAY;">${evento}</span>`;
+
+                let eventArrow = document.createElement("div");
+                eventArrow.className = "event-arrow";
+                eventArrow.style.left = (leftPos -5) + "px";
+                eventArrow.style.top = "-35px";
+
+                ganttChart.appendChild(eventLabel);
+                ganttChart.appendChild(eventArrow);
+            }
+        }
+    }
+
+    function mostrarGrafico() {
+        carregarDetracao(); 
+        atualizarGraficoGantt();
+        mostrarPontos();
+        // alert("foi");
+    }
+
+    function limparDados() {
+        if (confirm("Tem certeza de que deseja limpar todos os dados?")) {
+            localStorage.clear();
+            alert("Todos os dados foram limpos.");
+            location.reload(); // Recarregar a página para limpar os campos do formulário
+        }
+    }
+
+    function carregarDetracao() {
+        let numero = document.getElementById("numero").value;
+        if (numero) {
+            // Carregar detração
+            document.getElementById("detractionStartDate").value = JSON.parse(localStorage.getItem("detractionStartDate_" + numero)) || "";
+            document.getElementById("detractionEndDate").value = JSON.parse(localStorage.getItem("detractionEndDate_" + numero)) || "";
+            document.getElementById("detractionExecDays").value = JSON.parse(localStorage.getItem("detractionExecDays_" + numero)) || "";
+            document.getElementById("notaDetracao").value = JSON.parse(localStorage.getItem("notaDetracao_" + numero)) || "";
+
+            // Carregar novas detrações
+            document.getElementById("detractionStartDate2").value = JSON.parse(localStorage.getItem("detractionStartDate2_" + numero)) || "";
+            document.getElementById("detractionEndDate2").value = JSON.parse(localStorage.getItem("detractionEndDate2_" + numero)) || "";
+            document.getElementById("detractionExecDays2").value = JSON.parse(localStorage.getItem("detractionExecDays2_" + numero)) || "";
+            document.getElementById("notaDetracao2").value = JSON.parse(localStorage.getItem("notaDetracao2_" + numero)) || "";
+
+            document.getElementById("detractionStartDate3").value = JSON.parse(localStorage.getItem("detractionStartDate3_" + numero)) || "";
+            document.getElementById("detractionEndDate3").value = JSON.parse(localStorage.getItem("detractionEndDate3_" + numero)) || "";
+            document.getElementById("detractionExecDays3").value = JSON.parse(localStorage.getItem("detractionExecDays3_" + numero)) || "";
+            document.getElementById("notaDetracao3").value = JSON.parse(localStorage.getItem("notaDetracao3_" + numero)) || "";
+
+            document.getElementById("detractionStartDate4").value = JSON.parse(localStorage.getItem("detractionStartDate4_" + numero)) || "";
+            document.getElementById("detractionEndDate4").value = JSON.parse(localStorage.getItem("detractionEndDate4_" + numero)) || "";
+            document.getElementById("detractionExecDays4").value = JSON.parse(localStorage.getItem("detractionExecDays4_" + numero)) || "";
+            document.getElementById("notaDetracao4").value = JSON.parse(localStorage.getItem("notaDetracao4_" + numero)) || "";
+
+            document.getElementById("detractionStartDate5").value = JSON.parse(localStorage.getItem("detractionStartDate5_" + numero)) || "";
+            document.getElementById("detractionEndDate5").value = JSON.parse(localStorage.getItem("detractionEndDate5_" + numero)) || "";
+            document.getElementById("detractionExecDays5").value = JSON.parse(localStorage.getItem("detractionExecDays5_" + numero)) || "";
+            document.getElementById("notaDetracao5").value = JSON.parse(localStorage.getItem("notaDetracao5_" + numero)) || "";
+
+            document.getElementById("detractionStartDate6").value = JSON.parse(localStorage.getItem("detractionStartDate6_" + numero)) || "";
+            document.getElementById("detractionEndDate6").value = JSON.parse(localStorage.getItem("detractionEndDate6_" + numero)) || "";
+            document.getElementById("detractionExecDays6").value = JSON.parse(localStorage.getItem("detractionExecDays6_" + numero)) || "";
+            document.getElementById("notaDetracao6").value = JSON.parse(localStorage.getItem("notaDetracao6_" + numero)) || "";
+
+            document.getElementById("detractionStartDate7").value = JSON.parse(localStorage.getItem("detractionStartDate7_" + numero)) || "";
+            document.getElementById("detractionEndDate7").value = JSON.parse(localStorage.getItem("detractionEndDate7_" + numero)) || "";
+            document.getElementById("detractionExecDays7").value = JSON.parse(localStorage.getItem("detractionExecDays7_" + numero)) || "";
+            document.getElementById("notaDetracao7").value = JSON.parse(localStorage.getItem("notaDetracao7_" + numero)) || "";
+
+            document.getElementById("detractionStartDate8").value = JSON.parse(localStorage.getItem("detractionStartDate8_" + numero)) || "";
+            document.getElementById("detractionEndDate8").value = JSON.parse(localStorage.getItem("detractionEndDate8_" + numero)) || "";
+            document.getElementById("detractionExecDays8").value = JSON.parse(localStorage.getItem("detractionExecDays8_" + numero)) || "";
+            document.getElementById("notaDetracao8").value = JSON.parse(localStorage.getItem("notaDetracao8_" + numero)) || "";
+
+            document.getElementById("detractionStartDate9").value = JSON.parse(localStorage.getItem("detractionStartDate9_" + numero)) || "";
+            document.getElementById("detractionEndDate9").value = JSON.parse(localStorage.getItem("detractionEndDate9_" + numero)) || "";
+            document.getElementById("detractionExecDays9").value = JSON.parse(localStorage.getItem("detractionExecDays9_" + numero)) || "";
+            document.getElementById("notaDetracao9").value = JSON.parse(localStorage.getItem("notaDetracao9_" + numero)) || "";
+
+            document.getElementById("detractionStartDate10").value = JSON.parse(localStorage.getItem("detractionStartDate10_" + numero)) || "";
+            document.getElementById("detractionEndDate10").value = JSON.parse(localStorage.getItem("detractionEndDate10_" + numero)) || "";
+            document.getElementById("detractionExecDays10").value = JSON.parse(localStorage.getItem("detractionExecDays10_" + numero)) || "";
+            document.getElementById("notaDetracao10").value = JSON.parse(localStorage.getItem("notaDetracao10_" + numero)) || "";
+            // alert("Dados da detração carregados para o número " + numero); DEIXAR ESSA LINHA COMO COMENTÁRIO
+        } else {
+            alert("Por favor, insira um número antes de carregar.");
+        }
+    }
+
+    document.getElementById("numero").addEventListener("change", carregarDetracao);
+    document.getElementById("numeroExistente").addEventListener("change", carregarDadosExistente);
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    function mostrarPontos() {
+        let icp = new Date(document.getElementById("icp").value);
+        let interrupcoes = [];
+        for (let i = 1; i <= 10; i++) {
+            let comeco = new Date(document.getElementById("data_comeco_interrupcao_" + i).value);
+            let termino = new Date(document.getElementById("data_termino_interrupcao_" + i).value);
+            if (!isNaN(comeco) && !isNaN(termino)) {
+                interrupcoes.push({ comeco, termino });
+            }
+        }
+        adicionarPontosInterrupcao(interrupcoes, icp);
+        carregarDetracao()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Adicionar evento de mudança em todos os campos do formulário
+document.querySelectorAll("#meuFormulario input, #meuFormulario select, #meuFormulario textarea").forEach(function(element) {
+    element.addEventListener("change", function() {
+        salvarDados();
+        atualizarGraficoGantt();
+    });
+});
+
+    function formatElapsedTime(days) {
+        let years = Math.floor(days / 365);
+        days %= 365;
+        let months = Math.floor(days / 30);
+        days %= 30;
+        return `${years} a, ${months} m, ${days} d`;
+    }
+
+    function toggleFloatingBox() {
+        var floatingBox = document.getElementById("floatingBox");
+        if (floatingBox.style.display === "block" || floatingBox.style.display === "") {
+            floatingBox.style.display = "none"; // Mostra a caixa
+        } else {
+            floatingBox.style.display = "block"; // Oculta a caixa
+        }
+    }
+
+    function salvarDetracao() {
+        let numero = document.getElementById("numero").value;
+        if (numero) {
+            // Salvando detração
+            localStorage.setItem("detractionStartDate_" + numero, JSON.stringify(document.getElementById("detractionStartDate").value));
+            localStorage.setItem("detractionEndDate_" + numero, JSON.stringify(document.getElementById("detractionEndDate").value));
+            localStorage.setItem("detractionExecDays_" + numero, JSON.stringify(document.getElementById("detractionExecDays").value));
+            localStorage.setItem("notaDetracao_" + numero, JSON.stringify(document.getElementById("notaDetracao").value));
+
+            // Salvando novas detrações
+            localStorage.setItem("detractionStartDate2_" + numero, JSON.stringify(document.getElementById("detractionStartDate2").value));
+            localStorage.setItem("detractionEndDate2_" + numero, JSON.stringify(document.getElementById("detractionEndDate2").value));
+            localStorage.setItem("detractionExecDays2_" + numero, JSON.stringify(document.getElementById("detractionExecDays2").value));
+            localStorage.setItem("notaDetracao2_" + numero, JSON.stringify(document.getElementById("notaDetracao2").value));
+
+            localStorage.setItem("detractionStartDate3_" + numero, JSON.stringify(document.getElementById("detractionStartDate3").value));
+            localStorage.setItem("detractionEndDate3_" + numero, JSON.stringify(document.getElementById("detractionEndDate3").value));
+            localStorage.setItem("detractionExecDays3_" + numero, JSON.stringify(document.getElementById("detractionExecDays3").value));
+            localStorage.setItem("notaDetracao3_" + numero, JSON.stringify(document.getElementById("notaDetracao3").value));
+
+            localStorage.setItem("detractionStartDate4_" + numero, JSON.stringify(document.getElementById("detractionStartDate4").value));
+            localStorage.setItem("detractionEndDate4_" + numero, JSON.stringify(document.getElementById("detractionEndDate4").value));
+            localStorage.setItem("detractionExecDays4_" + numero, JSON.stringify(document.getElementById("detractionExecDays4").value));
+            localStorage.setItem("notaDetracao4_" + numero, JSON.stringify(document.getElementById("notaDetracao4").value));
+
+            localStorage.setItem("detractionStartDate5_" + numero, JSON.stringify(document.getElementById("detractionStartDate5").value));
+            localStorage.setItem("detractionEndDate5_" + numero, JSON.stringify(document.getElementById("detractionEndDate5").value));
+            localStorage.setItem("detractionExecDays5_" + numero, JSON.stringify(document.getElementById("detractionExecDays5").value));
+            localStorage.setItem("notaDetracao5_" + numero, JSON.stringify(document.getElementById("notaDetracao5").value));
+
+            localStorage.setItem("detractionStartDate6_" + numero, JSON.stringify(document.getElementById("detractionStartDate6").value));
+            localStorage.setItem("detractionEndDate6_" + numero, JSON.stringify(document.getElementById("detractionEndDate6").value));
+            localStorage.setItem("detractionExecDays6_" + numero, JSON.stringify(document.getElementById("detractionExecDays6").value));
+            localStorage.setItem("notaDetracao6_" + numero, JSON.stringify(document.getElementById("notaDetracao6").value));
+
+            localStorage.setItem("detractionStartDate7_" + numero, JSON.stringify(document.getElementById("detractionStartDate7").value));
+            localStorage.setItem("detractionEndDate7_" + numero, JSON.stringify(document.getElementById("detractionEndDate7").value));
+            localStorage.setItem("detractionExecDays7_" + numero, JSON.stringify(document.getElementById("detractionExecDays7").value));
+            localStorage.setItem("notaDetracao7_" + numero, JSON.stringify(document.getElementById("notaDetracao7").value));
+
+            localStorage.setItem("detractionStartDate8_" + numero, JSON.stringify(document.getElementById("detractionStartDate8").value));
+            localStorage.setItem("detractionEndDate8_" + numero, JSON.stringify(document.getElementById("detractionEndDate8").value));
+            localStorage.setItem("detractionExecDays8_" + numero, JSON.stringify(document.getElementById("detractionExecDays8").value));
+            localStorage.setItem("notaDetracao8_" + numero, JSON.stringify(document.getElementById("notaDetracao8").value));
+
+            localStorage.setItem("detractionStartDate9_" + numero, JSON.stringify(document.getElementById("detractionStartDate9").value));
+            localStorage.setItem("detractionEndDate9_" + numero, JSON.stringify(document.getElementById("detractionEndDate9").value));
+            localStorage.setItem("detractionExecDays9_" + numero, JSON.stringify(document.getElementById("detractionExecDays9").value));
+            localStorage.setItem("notaDetracao9_" + numero, JSON.stringify(document.getElementById("notaDetracao9").value));
+
+            localStorage.setItem("detractionStartDate10_" + numero, JSON.stringify(document.getElementById("detractionStartDate10").value));
+            localStorage.setItem("detractionEndDate10_" + numero, JSON.stringify(document.getElementById("detractionEndDate10").value));
+            localStorage.setItem("detractionExecDays10_" + numero, JSON.stringify(document.getElementById("detractionExecDays10").value));
+            localStorage.setItem("notaDetracao10_" + numero, JSON.stringify(document.getElementById("notaDetracao10").value));
+        } else {
+            alert("Por favor, insira um número antes de salvar.");
+        }
+    }
+
+    function criarNovoPEC() {
+        let novoNumero = prompt("Digite o número do novo PEC:");
+        if (novoNumero) {
+            document.getElementById("numero").value = novoNumero;
+            carregarDados(); // Carregar dados para o novo número
+        }
+    }
+
+    function deletarPEC() {
+        let numero = document.getElementById("numero").value;
+        if (numero && confirm(`Tem certeza de que deseja deletar o PEC número ${numero}?`)) {
+            // Remover dados do localStorage
+            localStorage.removeItem("detractionStartDate_" + numero);
+            localStorage.removeItem("detractionEndDate_" + numero);
+            localStorage.removeItem("detractionExecDays_" + numero);
+            localStorage.removeItem("notaDetracao_" + numero);
+
+            // Remover novas detrações
+            localStorage.removeItem("detractionStartDate2_" + numero);
+            localStorage.removeItem("detractionEndDate2_" + numero);
+            localStorage.removeItem("detractionExecDays2_" + numero);
+            localStorage.removeItem("notaDetracao2_" + numero);
+
+            localStorage.removeItem("detractionStartDate3_" + numero);
+            localStorage.removeItem("detractionEndDate3_" + numero);
+            localStorage.removeItem("detractionExecDays3_" + numero);
+            localStorage.removeItem("notaDetracao3_" + numero);
+
+            localStorage.removeItem("detractionStartDate4_" + numero);
+            localStorage.removeItem("detractionEndDate4_" + numero);
+            localStorage.removeItem("detractionExecDays4_" + numero);
+            localStorage.removeItem("notaDetracao4_" + numero);
+
+            localStorage.removeItem("detractionStartDate5_" + numero);
+            localStorage.removeItem("detractionEndDate5_" + numero);
+            localStorage.removeItem("detractionExecDays5_" + numero);
+            localStorage.removeItem("notaDetracao5_" + numero);
+
+            localStorage.removeItem("detractionStartDate6_" + numero);
+            localStorage.removeItem("detractionEndDate6_" + numero);
+            localStorage.removeItem("detractionExecDays6_" + numero);
+            localStorage.removeItem("notaDetracao6_" + numero);
+
+            localStorage.removeItem("detractionStartDate7_" + numero);
+            localStorage.removeItem("detractionEndDate7_" + numero);
+            localStorage.removeItem("detractionExecDays7_" + numero);
+            localStorage.removeItem("notaDetracao7_" + numero);
+
+            localStorage.removeItem("detractionStartDate8_" + numero);
+            localStorage.removeItem("detractionEndDate8_" + numero);
+            localStorage.removeItem("detractionExecDays8_" + numero);
+            localStorage.removeItem("notaDetracao8_" + numero);
+
+            localStorage.removeItem("detractionStartDate9_" + numero);
+            localStorage.removeItem("detractionEndDate9_" + numero);
+            localStorage.removeItem("detractionExecDays9_" + numero);
+            localStorage.removeItem("notaDetracao9_" + numero);
+
+            localStorage.removeItem("detractionStartDate10_" + numero);
+            localStorage.removeItem("detractionEndDate10_" + numero);
+            localStorage.removeItem("detractionExecDays10_" + numero);
+            localStorage.removeItem("notaDetracao10_" + numero);
+
+            localStorage.removeItem("nome_" + numero);
+            localStorage.removeItem("desfecho_" + numero);
+            localStorage.removeItem("icp_" + numero);
+
+            for (let i = 1; i <= 10; i++) {
+                localStorage.removeItem("data_comeco_interrupcao_" + i + "_" + numero);
+                localStorage.removeItem("data_termino_interrupcao_" + i + "_" + numero);
+                localStorage.removeItem("rotulo_interrupcao_" + i + "_" + numero);
+            }
+
+            for (let i = 1; i <= 11; i++) {
+                localStorage.removeItem("numExec" + i + "_" + numero);
+                localStorage.removeItem("obsExec" + i + "_" + numero);
+                localStorage.removeItem("anosExec" + i + "_" + numero);
+                localStorage.removeItem("mesesExec" + i + "_" + numero);
+                localStorage.removeItem("diasExec" + i + "_" + numero);
+                localStorage.removeItem("remicaoExec" + i + "_" + numero);
+                localStorage.removeItem("totalDiasExec" + i + "_" + numero);
+            }
+
+            for (let i = 1; i <= 15; i++) {
+                localStorage.removeItem("evento_" + i + "_" + numero);
+                localStorage.removeItem("data_evento_" + i + "_" + numero);
+            }
+
+            localStorage.removeItem("anotacoes_" + numero);
+
+            // Remover checkboxes
+            for (let i = 1; i <= 20; i++) {
+                localStorage.removeItem("checkbox" + i + "_" + numero);
+            }
+
+            // Remover o número da lista de números cadastrados
+            let numeroExistente = document.getElementById("numeroExistente");
+            let optionToRemove = numeroExistente.querySelector(`option[value="${numero}"]`);
+            if (optionToRemove) {
+                numeroExistente.removeChild(optionToRemove);
+            }
+
+            // Limpar o campo número e recarregar os dados
+            document.getElementById("numero").value = "0";
+            carregarDados();
+            alert(`PEC número ${numero} deletado com sucesso.`);
+        }
+    }
+
+    function gerarLista() {
+        let lista = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            let chave = localStorage.key(i);
+            if (chave.startsWith("nome_")) {
+                let numero = chave.split("_")[1];
+                let nome = JSON.parse(localStorage.getItem(chave));
+                let desfecho = JSON.parse(localStorage.getItem("desfecho_" + numero)) || "N/A";
+                lista.push({ numero, nome, desfecho });
+            }
+        }
+
+        let novaJanela = window.open("", "_blank");
+        novaJanela.document.write("<html><head>Lista de Números Cadastrados</head><body>");
+        novaJanela.document.write(" (recentes) ");
+        novaJanela.document.write("<ul>");
+        lista.forEach(item => {
+            novaJanela.document.write(`<li>${item.numero}: ${item.nome} - Desfecho: ${item.desfecho}</li>`);
+        });
+        novaJanela.document.write("</ul>");
+        novaJanela.document.write("</body></html>");
+        novaJanela.document.close();
+    }
+
+    // Adicionar classe event-input aos campos de eventos
+    for (let i = 1; i <= 15; i++) {
+        document.getElementById("evento_" + i).classList.add("event-input");
+    }
+</script>  
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    const campos = document.querySelectorAll("input, textarea, select");
+
+    // Função para verificar e atualizar a classe de todos os campos
+    function verificarCamposPreenchidos() {
+        campos.forEach(campo => {
+            if (campo.value.trim() !== "") {
+                campo.classList.add("campo-preenchido");
+            } else {
+                campo.classList.remove("campo-preenchido");
+            }
+        });
+    }
+
+    // Verifica os campos ao carregar a página
+    verificarCamposPreenchidos();
+
+    // Adiciona um listener para verificar os campos sempre que um deles for alterado
+    campos.forEach(campo => {
+        campo.addEventListener("input", verificarCamposPreenchidos);
+        campo.addEventListener("change", verificarCamposPreenchidos); // Para campos como select e input[type="date"]
+    });
+
+    // Adicionar evento de input em todos os campos de checkbox para salvar automaticamente
+    for (let i = 1; i <= 20; i++) {
+        document.getElementById("checkbox" + i).addEventListener("input", salvarDados);
+    }
+});
+
+
+
+</script>
+
+
+
+</body>
+</html>
